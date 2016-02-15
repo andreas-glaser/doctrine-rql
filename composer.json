@@ -1,0 +1,48 @@
+{
+  "name": "andreas-glaser/doctrine-rql",
+  "description": "Parses and applies RQL scripts to doctrine query builders",
+  "keywords": [
+    "php",
+    "doctrine",
+    "database"
+  ],
+  "homepage": "https://github.com/andreas-glaser/doctrine-rql",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Andreas Glaser",
+      "email": "andreas.c.glaser@gmail.com",
+      "homepage": "http://andreas.glaser.me"
+    }
+  ],
+  "require": {
+    "php": ">=5.5",
+    "xiag/rql-parser": "*",
+    "doctrine/orm": "^2.5",
+    "andreas-glaser/php-helpers": "^1",
+    "doctrine/data-fixtures": "^1.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^4"
+  },
+  "suggest": {},
+  "config": {
+    "bin-dir": "bin"
+  },
+  "autoload": {
+    "psr-4": {
+      "AndreasGlaser\\DoctrineRql\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "AndreasGlaser\\DoctrineRql\\": "test/"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "0.1.x-dev"
+    }
+  }
+}
