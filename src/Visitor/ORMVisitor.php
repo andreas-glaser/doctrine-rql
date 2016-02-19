@@ -69,8 +69,6 @@ class ORMVisitor
         }
 
         $this->visitQuery($query);
-
-        $this->qb->andWhere($this->walkNodes($query->getQuery()));
     }
 
     /**
@@ -100,9 +98,20 @@ class ORMVisitor
      */
     protected function visitQuery(RqlQuery $query)
     {
+        if ($selectNode = $query->getSelect()) {
+            // todo: Implement this
+        }
+
+        if ($abstractQueryNode = $query->getQuery()) {
+            $this->qb->andWhere(
+                $this->walkNodes($abstractQueryNode)
+            );
+        }
+
         if ($query->getSort()) {
             $this->visitSort($query->getSort());
         }
+
         if ($query->getLimit()) {
             $this->visitLimit($query->getLimit());
         }
