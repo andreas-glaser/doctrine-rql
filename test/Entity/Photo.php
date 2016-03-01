@@ -2,11 +2,10 @@
 
 namespace AndreasGlaser\DoctrineRql\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class Product
+ * Class Photo
  *
  * @package AndreasGlaser\DoctrineRql\Entity
  * @author  Andreas Glaser
@@ -14,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity()
  * @ORM\Table()
  */
-class Product
+class Photo
 {
     /**
      * @ORM\Id()
@@ -24,17 +23,7 @@ class Product
     public $id;
 
     /**
-     * @ORM\Column(name="name", type="string", nullable=false)
+     * @ORM\Column(name="name", type="text", nullable=false)
      */
     public $name;
-
-    /**
-     * @ORM\OneToMany(targetEntity="ProductPhoto", mappedBy="product")
-     */
-    public $photos;
-
-    public function __construct()
-    {
-        $this->photos = new ArrayCollection();
-    }
 }

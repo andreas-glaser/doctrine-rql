@@ -3,7 +3,6 @@
 namespace AndreasGlaser\DoctrineRql\Visitor;
 
 use AndreasGlaser\Helpers\ArrayHelper;
-use AndreasGlaser\Helpers\StringHelper;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
 use Xiag\Rql\Parser\Node;
@@ -43,6 +42,15 @@ class ORMVisitor
     ];
 
     /**
+     * @var array
+     */
+    protected $logicMap = [
+        'Xiag\Rql\Parser\Node\Query\LogicOperator\AndNode' => '\Doctrine\ORM\Query\Expr\Andx',
+        'Xiag\Rql\Parser\Node\Query\LogicOperator\OrNode'  => '\Doctrine\ORM\Query\Expr\Orx',
+        'Xiag\Rql\Parser\Node\Query\LogicOperator\NotNode' => '\Doctrine\ORM\Query\Expr\Not',
+    ];
+
+    /**
      * @var QueryBuilder
      */
     protected $qb;
@@ -53,11 +61,15 @@ class ORMVisitor
     protected $autoRootAlias;
 
     /**
+     * @var array
+     */
+    protected $aliasMap = [];
+
+    /**
      * @param \Doctrine\ORM\QueryBuilder $qb
      * @param \Xiag\Rql\Parser\Query     $query
      * @param bool                       $autoRootAlias
      *
-     * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
      * @author Andreas Glaser
      */
     public function append(QueryBuilder $qb, RqlQuery $query, $autoRootAlias = true)
@@ -66,15 +78,43 @@ class ORMVisitor
 
         if ($autoRootAlias) {
             $this->autoRootAlias = ArrayHelper::getFirstIndex($this->qb->getRootAliases());
+        } else {
+            $this->autoRootAlias = null;
         }
 
+        $this->buildPathToAliasMap($qb);
         $this->visitQuery($query);
+    }
+
+    /**
+     * @param \Doctrine\ORM\QueryBuilder $qb
+     *
+     * @author Andreas Glaser
+     */
+    protected function buildPathToAliasMap(QueryBuilder $qb)
+    {
+        $this->aliasMap = []; // reset
+
+        $rootAlias = ArrayHelper::getFirstIndex($this->qb->getRootAliases());
+        $this->aliasMap[$rootAlias] = $rootAlias;
+
+        /** @var Expr\Join $part */
+        foreach ($qb->getDQLParts()['join'][$rootAlias] AS $part) {
+            $alias = $part->getAlias();
+            $join = $part->getJoin();
+            $path = $alias;
+            $pieces = explode('.', $join);
+            if ($parentAlias = ArrayHelper::getKeyByValue($this->aliasMap, $pieces[0])) {
+                $path = $parentAlias . '.' . $alias;
+            }
+            $this->aliasMap[$path] = $alias;
+        }
     }
 
     /**
      * @param \Xiag\Rql\Parser\Node\AbstractQueryNode $node
      *
-     * @return \Doctrine\ORM\Query\Expr|\Doctrine\ORM\Query\Expr\Andx|\Doctrine\ORM\Query\Expr\Orx
+     * @return mixed
      * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
      * @author Andreas Glaser
      */
@@ -92,9 +132,10 @@ class ORMVisitor
     }
 
     /**
-     * @param RqlQuery $query top level query that needs visiting
+     * @param \Xiag\Rql\Parser\Query $query
      *
-     * @return void
+     * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
+     * @author Andreas Glaser
      */
     protected function visitQuery(RqlQuery $query)
     {
@@ -103,9 +144,7 @@ class ORMVisitor
         }
 
         if ($abstractQueryNode = $query->getQuery()) {
-            $this->qb->andWhere(
-                $this->walkNodes($abstractQueryNode)
-            );
+            $this->qb->andWhere($this->walkNodes($abstractQueryNode));
         }
 
         if ($query->getSort()) {
@@ -131,14 +170,8 @@ class ORMVisitor
         }
 
         $parameterName = ':param_' . uniqid();
-
-        $field = $node->getField();
-
-        if ($this->autoRootAlias && !StringHelper::contains($field, '.')) {
-            $field = $this->autoRootAlias . '.' . $field;
-        }
-
-        $exp = $this->qb->expr()->$method($field, $parameterName);
+        $pathToField = $node->getField();
+        $exp = $this->qb->expr()->$method($this->pathToAlias($pathToField), $parameterName);
         $this->qb->setParameter($parameterName, $node->getValue());
 
         return $exp;
@@ -147,7 +180,7 @@ class ORMVisitor
     /**
      * @param \Xiag\Rql\Parser\Node\Query\AbstractArrayOperatorNode $node
      *
-     * @return Expr
+     * @return mixed
      * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
      * @author Andreas Glaser
      */
@@ -157,13 +190,8 @@ class ORMVisitor
             throw new VisitorException('Unsupported');
         }
 
-        $field = $node->getField();
-
-        if ($this->autoRootAlias && !StringHelper::contains($field, '.')) {
-            $field = $this->autoRootAlias . '.' . $field;
-        }
-
-        $exp = $this->qb->expr()->$method($field, $node->getValues());
+        $pathToField = $node->getField();
+        $exp = $this->qb->expr()->$method($this->pathToAlias($pathToField), $node->getValues());
 
         return $exp;
     }
@@ -171,22 +199,17 @@ class ORMVisitor
     /**
      * @param \Xiag\Rql\Parser\Node\Query\AbstractLogicOperatorNode $node
      *
-     * @return \Doctrine\ORM\Query\Expr\Andx|\Doctrine\ORM\Query\Expr\Orx
+     * @return mixed
      * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
      * @author Andreas Glaser
      */
     protected function visitLogic(AbstractLogicOperatorNode $node)
     {
-        if ($node instanceof Node\Query\LogicOperator\AndNode) {
-            $expr = new Expr\Andx();
-        } elseif ($node instanceof Node\Query\LogicOperator\OrNode) {
-            $expr = new Expr\Orx();
-        } elseif ($node instanceof Node\Query\LogicOperator\NotNode) {
-            $expr = new Expr\Andx();
-        } else {
-            throw new VisitorException('Not supported');
+        if (!$class = ArrayHelper::get($this->logicMap, get_class($node))) {
+            throw new VisitorException('Unsupported');
         }
 
+        $expr = new $class();
         foreach ($node->getQueries() as $query) {
             $expr->add($this->walkNodes($query));
         }
@@ -201,14 +224,8 @@ class ORMVisitor
      */
     protected function visitSort(Node\SortNode $node)
     {
-
         foreach ($node->getFields() as $field => $order) {
-
-            if ($this->autoRootAlias && !StringHelper::contains($field, '.')) {
-                $field = $this->autoRootAlias . '.' . $field;
-            }
-
-            $this->qb->orderBy($field, $order === 1 ? 'ASC' : 'DESC');
+            $this->qb->orderBy($this->pathToAlias($field), $order === 1 ? 'ASC' : 'DESC');
         }
     }
 
@@ -222,5 +239,25 @@ class ORMVisitor
         $this->qb
             ->setMaxResults($node->getLimit())
             ->setMaxResults($node->getOffset());
+    }
+
+    /**
+     * @param $path
+     *
+     * @return null
+     * @author Andreas Glaser
+     */
+    protected function pathToAlias($path)
+    {
+
+        if ($this->autoRootAlias) {
+            $path = $this->autoRootAlias . '.' . $path;
+        }
+
+        $lastPos = strrpos($path, '.');
+        $field = substr($path, $lastPos + 1);
+        $path = substr($path, 0, $lastPos);
+
+        return ArrayHelper::get($this->aliasMap, $path) . '.' . $field;
     }
 }

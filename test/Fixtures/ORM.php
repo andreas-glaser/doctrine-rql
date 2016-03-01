@@ -21,17 +21,23 @@ class ORM implements FixtureInterface
      */
     public function load(ObjectManager $manager)
     {
-        $product = new Entity\Product();
-        $product->name = 'Product 1';
-        $manager->persist($product);
+        for ($i = 1; $i <= 10; $i++) {
 
-        $product = new Entity\Product();
-        $product->name = 'Product 2';
-        $manager->persist($product);
+            $cart = new Entity\Cart();
+            $product = new Entity\Product();
+            $photo = new Entity\Photo();
+            $productPhoto = new Entity\ProductPhoto();
 
-        $product = new Entity\Product();
-        $product->name = 'Product 3';
-        $manager->persist($product);
+            $product->name = 'Product ' . $i;
+            $photo->name = 'Photo ' . $i;
+            $productPhoto->photo = $photo;
+            $productPhoto->product = $product;
+            $cart->products->add($product);
+
+            $manager->persist($productPhoto);
+            $manager->persist($product);
+            $manager->persist($cart);
+        }
 
         $manager->flush();
     }

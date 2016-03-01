@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Class Product
+ * Class Cart
  *
  * @package AndreasGlaser\DoctrineRql\Entity
  * @author  Andreas Glaser
@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity()
  * @ORM\Table()
  */
-class Product
+class Cart
 {
     /**
      * @ORM\Id()
@@ -24,17 +24,18 @@ class Product
     public $id;
 
     /**
-     * @ORM\Column(name="name", type="string", nullable=false)
+     * Product[]|ArrayCollection
+     *
+     * @ORM\ManyToMany(targetEntity="Product")
+     * @ORM\JoinTable(name="cart_products",
+     *      joinColumns={@ORM\JoinColumn(name="cart_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="product_id", referencedColumnName="id")}
+     * )
      */
-    public $name;
-
-    /**
-     * @ORM\OneToMany(targetEntity="ProductPhoto", mappedBy="product")
-     */
-    public $photos;
+    public $products;
 
     public function __construct()
     {
-        $this->photos = new ArrayCollection();
+        $this->products = new ArrayCollection();
     }
 }

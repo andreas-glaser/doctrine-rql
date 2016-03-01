@@ -52,18 +52,21 @@ class ORMTest extends \PHPUnit_Framework_TestCase
 
     public function test()
     {
-        $rql = 'eq(name,123)sort(+name)'; // user input
+        $rql = 'eq(cart.id,2)'; // user input
 
         $rqlQuery = Helper\Parser::parseFilterOnly($rql);
 
         $qb = $this->em->createQueryBuilder();
 
         $qb
-            ->select('product')
-            ->from('AndreasGlaser\DoctrineRql\Entity\Product', 'product');
+            ->select('cart, products, photos, photo')
+            ->from('AndreasGlaser\DoctrineRql\Entity\Cart', 'cart')
+            ->leftJoin('cart.products', 'products')
+            ->leftJoin('products.photos', 'photos')
+            ->leftJoin('photos.photo', 'photo');
 
         $ormVisitor = new Visitor\ORMVisitor();
-        $ormVisitor->append($qb, $rqlQuery);
+        $ormVisitor->append($qb, $rqlQuery, false);
 
         print_r($qb->getQuery()->getSQL());
         exit;
