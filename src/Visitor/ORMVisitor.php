@@ -74,6 +74,8 @@ class ORMVisitor
      */
     public function append(QueryBuilder $qb, RqlQuery $query, $autoRootAlias = true)
     {
+        $this->reset();
+
         $this->qb = $qb;
 
         if ($autoRootAlias) {
@@ -86,6 +88,13 @@ class ORMVisitor
         $this->visitQuery($query);
     }
 
+    public function reset()
+    {
+        $this->qb = null;
+        $this->autoRootAlias = null;
+        $this->aliasMap = [];
+    }
+
     /**
      * @param \Doctrine\ORM\QueryBuilder $qb
      *
@@ -93,8 +102,6 @@ class ORMVisitor
      */
     protected function buildPathToAliasMap(QueryBuilder $qb)
     {
-        $this->aliasMap = []; // reset
-
         $rootAlias = ArrayHelper::getFirstIndex($this->qb->getRootAliases());
         $this->aliasMap[$rootAlias] = $rootAlias;
 
@@ -249,7 +256,6 @@ class ORMVisitor
      */
     protected function pathToAlias($path)
     {
-
         if ($this->autoRootAlias) {
             $path = $this->autoRootAlias . '.' . $path;
         }

@@ -2,6 +2,7 @@
 
 namespace AndreasGlaser\DoctrineRql\Visitor;
 
+use AndreasGlaser\DoctrineRql\Factory\ORMVisitorFactory;
 use AndreasGlaser\DoctrineRql\Fixtures;
 use AndreasGlaser\DoctrineRql\Helper;
 use AndreasGlaser\DoctrineRql\Visitor as Visitor;
@@ -52,10 +53,6 @@ class ORMTest extends \PHPUnit_Framework_TestCase
 
     public function test()
     {
-        $rql = 'eq(cart.id,2)'; // user input
-
-        $rqlQuery = Helper\Parser::parseFilterOnly($rql);
-
         $qb = $this->em->createQueryBuilder();
 
         $qb
@@ -65,8 +62,9 @@ class ORMTest extends \PHPUnit_Framework_TestCase
             ->leftJoin('products.photos', 'photos')
             ->leftJoin('photos.photo', 'photo');
 
-        $ormVisitor = new Visitor\ORMVisitor();
-        $ormVisitor->append($qb, $rqlQuery, false);
+        $rql = 'eq(cart.id,2)'; // user input
+
+        ORMVisitorFactory::appendFiltersOnly($qb, $rql, false);
 
         print_r($qb->getQuery()->getSQL());
         exit;

@@ -5,29 +5,31 @@ namespace AndreasGlaser\DoctrineRql\Helper;
 use Xiag\Rql\Parser as Xiag;
 
 /**
- * Class Parser
+ * Class RQLParser
  *
  * @package AndreasGlaser\DoctrineRql\Helper
  * @author  Andreas Glaser
  */
-class Parser
+class RQLParser
 {
     /**
-     * All features including select()
+     * Creates SELECT/WHERE/SORT/LIMIT parser.
      *
      * @return \Xiag\Rql\Parser\Parser
      * @author Andreas Glaser
      */
-    public static function createDefault()
+    public static function createAll()
     {
         return Xiag\Parser::createDefault();
     }
 
     /**
+     * Creates WHERE/SORT/LIMIT parser.
+     *
      * @return Xiag\Parser
      * @author Andreas Glaser
      */
-    public static function createFilterOnly()
+    public static function createFiltersOnly()
     {
         $queryTokenParser = new Xiag\TokenParserGroup();
         $queryTokenParser
@@ -67,6 +69,8 @@ class Parser
     }
 
     /**
+     * Parses given RQL string into an abstract syntax tree (AST).
+     *
      * @param \Xiag\Rql\Parser\Parser $parser
      * @param string                  $rql
      *
@@ -81,24 +85,28 @@ class Parser
     }
 
     /**
+     * Shot cut
+     *
      * @param string $rql
      *
      * @return \Xiag\Rql\Parser\Query
      * @author Andreas Glaser
      */
-    public static function parseDefault($rql)
+    public static function parseAll($rql)
     {
-        return static::parse(self::createDefault(), $rql);
+        return static::parse(self::createAll(), $rql);
     }
 
     /**
+     * Short cut
+     *
      * @param string $rql
      *
      * @return \Xiag\Rql\Parser\Query
      * @author Andreas Glaser
      */
-    public static function parseFilterOnly($rql)
+    public static function parseFiltersOnly($rql)
     {
-        return static::parse(self::createFilterOnly(), $rql);
+        return static::parse(self::createFiltersOnly(), $rql);
     }
 }
