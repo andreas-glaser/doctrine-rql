@@ -84,7 +84,7 @@ class ORMVisitor
             $this->autoRootAlias = null;
         }
 
-        $this->buildPathToAliasMap($qb);
+        $this->buildPathToAliasMap();
         $this->visitQuery($query);
     }
 
@@ -96,25 +96,25 @@ class ORMVisitor
     }
 
     /**
-     * @param \Doctrine\ORM\QueryBuilder $qb
-     *
      * @author Andreas Glaser
      */
-    protected function buildPathToAliasMap(QueryBuilder $qb)
+    protected function buildPathToAliasMap()
     {
         $rootAlias = ArrayHelper::getFirstIndex($this->qb->getRootAliases());
         $this->aliasMap[$rootAlias] = $rootAlias;
 
-        /** @var Expr\Join $part */
-        foreach ($qb->getDQLParts()['join'][$rootAlias] AS $part) {
-            $alias = $part->getAlias();
-            $join = $part->getJoin();
-            $path = $alias;
-            $pieces = explode('.', $join);
-            if ($parentAlias = ArrayHelper::getKeyByValue($this->aliasMap, $pieces[0])) {
-                $path = $parentAlias . '.' . $alias;
+        if (array_key_exists($rootAlias, $this->qb->getDQLParts()['join'])) {
+            /** @var Expr\Join $part */
+            foreach ($this->qb->getDQLParts()['join'][$rootAlias] AS $part) {
+                $alias = $part->getAlias();
+                $join = $part->getJoin();
+                $path = $alias;
+                $pieces = explode('.', $join);
+                if ($parentAlias = ArrayHelper::getKeyByValue($this->aliasMap, $pieces[0])) {
+                    $path = $parentAlias . '.' . $alias;
+                }
+                $this->aliasMap[$path] = $alias;
             }
-            $this->aliasMap[$path] = $alias;
         }
     }
 
