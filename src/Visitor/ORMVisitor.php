@@ -245,7 +245,7 @@ class ORMVisitor
     {
         $this->qb
             ->setMaxResults($node->getLimit())
-            ->setMaxResults($node->getOffset());
+            ->setFirstResult($node->getOffset());
     }
 
     /**
