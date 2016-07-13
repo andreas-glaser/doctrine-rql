@@ -47,7 +47,7 @@ class ORMVisitor
     protected $logicMap = [
         'Xiag\Rql\Parser\Node\Query\LogicOperator\AndNode' => '\Doctrine\ORM\Query\Expr\Andx',
         'Xiag\Rql\Parser\Node\Query\LogicOperator\OrNode'  => '\Doctrine\ORM\Query\Expr\Orx',
-        'Xiag\Rql\Parser\Node\Query\LogicOperator\NotNode' => '\Doctrine\ORM\Query\Expr\Not',
+        'Xiag\Rql\Parser\Node\Query\LogicOperator\NotNode' => '\AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\Notx',
     ];
 
     /**
@@ -219,6 +219,11 @@ class ORMVisitor
         $expr = new $class();
         foreach ($node->getQueries() as $query) {
             $expr->add($this->walkNodes($query));
+        }
+
+        // Notx workaround
+        if ($node instanceof Node\Query\LogicOperator\NotNode) {
+            $expr = new Expr\Func('NOT', $expr->getParts());
         }
 
         return $expr;
