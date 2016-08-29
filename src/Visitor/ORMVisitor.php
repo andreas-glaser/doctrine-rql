@@ -2,13 +2,15 @@
 
 namespace AndreasGlaser\DoctrineRql\Visitor;
 
+use AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\ExpressionBuilder;
 use AndreasGlaser\Helpers\ArrayHelper;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
+use Xiag\Rql\Parser\Glob;
 use Xiag\Rql\Parser\Node;
 use Xiag\Rql\Parser\Node\AbstractQueryNode;
 use Xiag\Rql\Parser\Node\Query\AbstractArrayOperatorNode;
-use Xiag\Rql\Parser\Node\Query\AbstractLogicOperatorNode;
+use Xiag\Rql\Parser\Node\Query\AbstractLogicalOperatorNode;
 use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
 use Xiag\Rql\Parser\Query as RqlQuery;
 
@@ -17,9 +19,15 @@ use Xiag\Rql\Parser\Query as RqlQuery;
  *
  * @package AndreasGlaser\DoctrineRql\Visitor
  * @author  Andreas Glaser
+ * @author Dominic Tubach <dominic.tubach@to.com>
  */
 class ORMVisitor
 {
+    /**
+     * @var ExpressionBuilder
+     */
+    private $expressionBuilder;
+
     /**
      * @var array
      */
@@ -45,9 +53,9 @@ class ORMVisitor
      * @var array
      */
     protected $logicMap = [
-        'Xiag\Rql\Parser\Node\Query\LogicOperator\AndNode' => '\Doctrine\ORM\Query\Expr\Andx',
-        'Xiag\Rql\Parser\Node\Query\LogicOperator\OrNode'  => '\Doctrine\ORM\Query\Expr\Orx',
-        'Xiag\Rql\Parser\Node\Query\LogicOperator\NotNode' => '\AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\Notx',
+        'Xiag\Rql\Parser\Node\Query\LogicalOperator\AndNode' => '\Doctrine\ORM\Query\Expr\Andx',
+        'Xiag\Rql\Parser\Node\Query\LogicalOperator\OrNode'  => '\Doctrine\ORM\Query\Expr\Orx',
+        'Xiag\Rql\Parser\Node\Query\LogicalOperator\NotNode' => '\AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\Notx',
     ];
 
     /**
@@ -119,6 +127,20 @@ class ORMVisitor
     }
 
     /**
+     * @return ExpressionBuilder
+     *
+     * @author Dominic Tubach <dominic.tubach@to.com>
+     */
+    protected function getExpressionBuilder()
+    {
+        if (null === $this->expressionBuilder) {
+            $this->expressionBuilder = new ExpressionBuilder();
+        }
+
+        return $this->expressionBuilder;
+    }
+
+    /**
      * @param \Xiag\Rql\Parser\Node\AbstractQueryNode $node
      *
      * @return mixed
@@ -131,10 +153,10 @@ class ORMVisitor
             return $this->visitScalar($node);
         } elseif ($node instanceof AbstractArrayOperatorNode) {
             return $this->visitArray($node);
-        } elseif ($node instanceof AbstractLogicOperatorNode) {
+        } elseif ($node instanceof AbstractLogicalOperatorNode) {
             return $this->visitLogic($node);
         } else {
-            throw new VisitorException('Not supported');
+            throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
     }
 
@@ -169,17 +191,23 @@ class ORMVisitor
      * @return mixed
      * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
      * @author Andreas Glaser
+     * @author Dominic Tubach <dominic.tubach@to.com>
      */
     protected function visitScalar(AbstractScalarOperatorNode $node)
     {
         if (!$method = ArrayHelper::get($this->scalarMap, get_class($node))) {
-            throw new VisitorException('Unsupported');
+            throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
 
         $parameterName = ':param_' . uniqid();
         $pathToField = $node->getField();
-        $exp = $this->qb->expr()->$method($this->pathToAlias($pathToField), $parameterName);
-        $this->qb->setParameter($parameterName, $node->getValue());
+        $exp = $this->getExpressionBuilder()->$method($this->pathToAlias($pathToField), $parameterName);
+        $parameter = $node->getValue();
+        if ($parameter instanceof Glob) {
+            $parameter = $parameter->toLike();
+        }
+
+        $this->qb->setParameter($parameterName, $parameter);
 
         return $exp;
     }
@@ -194,7 +222,7 @@ class ORMVisitor
     protected function visitArray(AbstractArrayOperatorNode $node)
     {
         if (!$method = ArrayHelper::get($this->arrayMap, get_class($node))) {
-            throw new VisitorException('Unsupported');
+            throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
 
         $pathToField = $node->getField();
@@ -204,16 +232,16 @@ class ORMVisitor
     }
 
     /**
-     * @param \Xiag\Rql\Parser\Node\Query\AbstractLogicOperatorNode $node
+     * @param \Xiag\Rql\Parser\Node\Query\AbstractLogicalOperatorNode $node
      *
      * @return mixed
      * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
      * @author Andreas Glaser
      */
-    protected function visitLogic(AbstractLogicOperatorNode $node)
+    protected function visitLogic(AbstractLogicalOperatorNode $node)
     {
         if (!$class = ArrayHelper::get($this->logicMap, get_class($node))) {
-            throw new VisitorException('Unsupported');
+            throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
 
         $expr = new $class();
@@ -222,7 +250,7 @@ class ORMVisitor
         }
 
         // Notx workaround
-        if ($node instanceof Node\Query\LogicOperator\NotNode) {
+        if ($node instanceof Node\Query\LogicalOperator\NotNode) {
             $expr = new Expr\Func('NOT', $expr->getParts());
         }
 
