@@ -5,6 +5,7 @@ namespace AndreasGlaser\DoctrineRql\Visitor;
 use AndreasGlaser\Helpers\ArrayHelper;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
+use Xiag\Rql\Parser\Glob;
 use Xiag\Rql\Parser\Node;
 use Xiag\Rql\Parser\Node\AbstractQueryNode;
 use Xiag\Rql\Parser\Node\Query\AbstractArrayOperatorNode;
@@ -179,7 +180,14 @@ class ORMVisitor
         $parameterName = ':param_' . uniqid();
         $pathToField = $node->getField();
         $exp = $this->qb->expr()->$method($this->pathToAlias($pathToField), $parameterName);
-        $this->qb->setParameter($parameterName, $node->getValue());
+
+        $parameter = $node->getValue();
+        if ($parameter instanceof Glob)
+        {
+            $parameter = $parameter->toLike();
+        }
+
+        $this->qb->setParameter($parameterName, $parameter);
 
         return $exp;
     }
@@ -261,7 +269,8 @@ class ORMVisitor
      */
     protected function pathToAlias($path)
     {
-        if ($this->autoRootAlias) {
+        if ($this->autoRootAlias)
+        {
             $path = $this->autoRootAlias . '.' . $path;
         }
 
