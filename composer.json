@@ -21,7 +21,7 @@
     "xiag/rql-parser": "^2",
     "xiag/rql-command": "^1",
     "doctrine/orm": "^2.5",
-    "andreas-glaser/php-helpers": "dev-master",
+    "andreas-glaser/php-helpers": "^1",
     "doctrine/data-fixtures": "^1.1"
   },
   "require-dev": {
@@ -44,7 +44,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "0.2.x-dev"
+      "dev-master": "0.3-dev"
     }
   }
 }
