@@ -9,8 +9,9 @@ use Xiag\Rql\Parser\Glob;
 use Xiag\Rql\Parser\Node;
 use Xiag\Rql\Parser\Node\AbstractQueryNode;
 use Xiag\Rql\Parser\Node\Query\AbstractArrayOperatorNode;
-use Xiag\Rql\Parser\Node\Query\AbstractLogicOperatorNode;
+use Xiag\Rql\Parser\Node\Query\AbstractLogicalOperatorNode;
 use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
+use Xiag\Rql\Parser\Node\Query\LogicalOperator;
 use Xiag\Rql\Parser\Query as RqlQuery;
 
 /**
@@ -46,9 +47,9 @@ class ORMVisitor
      * @var array
      */
     protected $logicMap = [
-        'Xiag\Rql\Parser\Node\Query\LogicOperator\AndNode' => '\Doctrine\ORM\Query\Expr\Andx',
-        'Xiag\Rql\Parser\Node\Query\LogicOperator\OrNode'  => '\Doctrine\ORM\Query\Expr\Orx',
-        'Xiag\Rql\Parser\Node\Query\LogicOperator\NotNode' => '\AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\Notx',
+        'Xiag\Rql\Parser\Node\Query\LogicalOperator\AndNode' => '\Doctrine\ORM\Query\Expr\Andx',
+        'Xiag\Rql\Parser\Node\Query\LogicalOperator\OrNode'  => '\Doctrine\ORM\Query\Expr\Orx',
+        'Xiag\Rql\Parser\Node\Query\LogicalOperator\NotNode' => '\AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\Notx',
     ];
 
     /**
@@ -107,14 +108,17 @@ class ORMVisitor
         $rootAlias = ArrayHelper::getFirstIndex($this->qb->getRootAliases());
         $this->aliasMap[$rootAlias] = $rootAlias;
 
-        if (array_key_exists($rootAlias, $this->qb->getDQLParts()['join'])) {
+        if (array_key_exists($rootAlias, $this->qb->getDQLParts()['join']))
+        {
             /** @var Expr\Join $part */
-            foreach ($this->qb->getDQLParts()['join'][$rootAlias] AS $part) {
+            foreach ($this->qb->getDQLParts()['join'][$rootAlias] AS $part)
+            {
                 $alias = $part->getAlias();
                 $join = $part->getJoin();
                 $path = $alias;
                 $pieces = explode('.', $join);
-                if ($parentAlias = ArrayHelper::getKeyByValue($this->aliasMap, $pieces[0])) {
+                if ($parentAlias = ArrayHelper::getKeyByValue($this->aliasMap, $pieces[0]))
+                {
                     $path = $parentAlias . '.' . $alias;
                 }
                 $this->aliasMap[$path] = $alias;
@@ -139,9 +143,9 @@ class ORMVisitor
         {
             return $this->visitArray($node);
         }
-        elseif ($node instanceof AbstractLogicOperatorNode)
+        elseif ($node instanceof AbstractLogicalOperatorNode)
         {
-            return $this->visitLogic($node);
+            return $this->visitLogical($node);
         }
         else
         {
@@ -228,13 +232,13 @@ class ORMVisitor
     }
 
     /**
-     * @param \Xiag\Rql\Parser\Node\Query\AbstractLogicOperatorNode $node
+     * @param \Xiag\Rql\Parser\Node\Query\AbstractLogicalOperatorNode $node
      *
      * @return mixed
      * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
      * @author Andreas Glaser
      */
-    protected function visitLogic(AbstractLogicOperatorNode $node)
+    protected function visitLogical(AbstractLogicalOperatorNode $node)
     {
         if (!$class = ArrayHelper::get($this->logicMap, get_class($node)))
         {
@@ -242,13 +246,15 @@ class ORMVisitor
         }
 
         $expr = new $class();
+
         foreach ($node->getQueries() as $query)
         {
             $expr->add($this->walkNodes($query));
         }
 
         // Notx workaround
-        if ($node instanceof Node\Query\LogicOperator\NotNode) {
+        if ($node instanceof Node\Query\LogicalOperator\NotNode)
+        {
             $expr = new Expr\Func('NOT', $expr->getParts());
         }
 
