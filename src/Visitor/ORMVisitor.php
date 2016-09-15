@@ -79,9 +79,12 @@ class ORMVisitor
 
         $this->qb = $qb;
 
-        if ($autoRootAlias) {
+        if ($autoRootAlias)
+        {
             $this->autoRootAlias = ArrayHelper::getFirstIndex($this->qb->getRootAliases());
-        } else {
+        }
+        else
+        {
             $this->autoRootAlias = null;
         }
 
@@ -128,14 +131,21 @@ class ORMVisitor
      */
     protected function walkNodes(AbstractQueryNode $node)
     {
-        if ($node instanceof AbstractScalarOperatorNode) {
+        if ($node instanceof AbstractScalarOperatorNode)
+        {
             return $this->visitScalar($node);
-        } elseif ($node instanceof AbstractArrayOperatorNode) {
+        }
+        elseif ($node instanceof AbstractArrayOperatorNode)
+        {
             return $this->visitArray($node);
-        } elseif ($node instanceof AbstractLogicOperatorNode) {
+        }
+        elseif ($node instanceof AbstractLogicOperatorNode)
+        {
             return $this->visitLogic($node);
-        } else {
-            throw new VisitorException('Not supported');
+        }
+        else
+        {
+            throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
     }
 
@@ -147,19 +157,23 @@ class ORMVisitor
      */
     protected function visitQuery(RqlQuery $query)
     {
-        if ($selectNode = $query->getSelect()) {
+        if ($selectNode = $query->getSelect())
+        {
             // todo: Implement this
         }
 
-        if ($abstractQueryNode = $query->getQuery()) {
+        if ($abstractQueryNode = $query->getQuery())
+        {
             $this->qb->andWhere($this->walkNodes($abstractQueryNode));
         }
 
-        if ($query->getSort()) {
+        if ($query->getSort())
+        {
             $this->visitSort($query->getSort());
         }
 
-        if ($query->getLimit()) {
+        if ($query->getLimit())
+        {
             $this->visitLimit($query->getLimit());
         }
     }
@@ -173,8 +187,9 @@ class ORMVisitor
      */
     protected function visitScalar(AbstractScalarOperatorNode $node)
     {
-        if (!$method = ArrayHelper::get($this->scalarMap, get_class($node))) {
-            throw new VisitorException('Unsupported');
+        if (!$method = ArrayHelper::get($this->scalarMap, get_class($node)))
+        {
+            throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
 
         $parameterName = ':param_' . uniqid();
@@ -201,8 +216,9 @@ class ORMVisitor
      */
     protected function visitArray(AbstractArrayOperatorNode $node)
     {
-        if (!$method = ArrayHelper::get($this->arrayMap, get_class($node))) {
-            throw new VisitorException('Unsupported');
+        if (!$method = ArrayHelper::get($this->arrayMap, get_class($node)))
+        {
+            throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
 
         $pathToField = $node->getField();
@@ -220,12 +236,14 @@ class ORMVisitor
      */
     protected function visitLogic(AbstractLogicOperatorNode $node)
     {
-        if (!$class = ArrayHelper::get($this->logicMap, get_class($node))) {
-            throw new VisitorException('Unsupported');
+        if (!$class = ArrayHelper::get($this->logicMap, get_class($node)))
+        {
+            throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
 
         $expr = new $class();
-        foreach ($node->getQueries() as $query) {
+        foreach ($node->getQueries() as $query)
+        {
             $expr->add($this->walkNodes($query));
         }
 
