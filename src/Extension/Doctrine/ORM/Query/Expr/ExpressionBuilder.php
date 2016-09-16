@@ -7,7 +7,7 @@ use Doctrine\ORM\Query\Expr;
  * This class is used to generate DQL expressions.
  *
  * @package AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr
- * @author Dominic Tubach <dominic.tubach@to.com>
+ * @author  Dominic Tubach <dominic.tubach@to.com>
  */
 class ExpressionBuilder extends Expr
 {

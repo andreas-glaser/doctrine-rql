@@ -19,7 +19,7 @@ use Xiag\Rql\Parser\Query as RqlQuery;
  *
  * @package AndreasGlaser\DoctrineRql\Visitor
  * @author  Andreas Glaser
- * @author Dominic Tubach <dominic.tubach@to.com>
+ * @author  Dominic Tubach <dominic.tubach@to.com>
  */
 class ORMVisitor
 {
@@ -226,9 +226,9 @@ class ORMVisitor
         }
 
         $pathToField = $node->getField();
-        $exp = $this->qb->expr()->$method($this->pathToAlias($pathToField), $node->getValues());
+        $expr = $this->qb->expr()->$method($this->pathToAlias($pathToField), $node->getValues());
 
-        return $exp;
+        return $expr;
     }
 
     /**

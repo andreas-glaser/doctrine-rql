@@ -3,15 +3,15 @@
 namespace AndreasGlaser\DoctrineRql\Helper;
 
 use Xiag\Rql\Parser as Xiag;
-use Xiag\Rql\Parser\NodeParser\Query\LogicalOperator as XiagLogicalOperator;
 use Xiag\Rql\Parser\NodeParser\Query\ComparisonOperator as XiagComparisonOperator;
+use Xiag\Rql\Parser\NodeParser\Query\LogicalOperator as XiagLogicalOperator;
 
 /**
  * Class RQLParser
  *
  * @package AndreasGlaser\DoctrineRql\Helper
  * @author  Andreas Glaser
- * @author Dominic Tubach <dominic.tubach@to.com>
+ * @author  Dominic Tubach <dominic.tubach@to.com>
  */
 class RQLParser
 {
@@ -36,11 +36,13 @@ class RQLParser
      */
     public static function createFiltersOnly()
     {
-        $scalarParser = (new Xiag\ValueParser\ScalarParser())
+        $scalarParser = new Xiag\ValueParser\ScalarParser();
+        $scalarParser
             ->registerTypeCaster('string', new Xiag\TypeCaster\StringTypeCaster())
             ->registerTypeCaster('integer', new Xiag\TypeCaster\IntegerTypeCaster())
             ->registerTypeCaster('float', new Xiag\TypeCaster\FloatTypeCaster())
             ->registerTypeCaster('boolean', new Xiag\TypeCaster\BooleanTypeCaster());
+
         $arrayParser = new Xiag\ValueParser\ArrayParser($scalarParser);
         $globParser = new Xiag\ValueParser\GlobParser();
         $fieldParser = new Xiag\ValueParser\FieldParser();
@@ -49,11 +51,9 @@ class RQLParser
         $queryNodeParser = new Xiag\NodeParser\QueryNodeParser();
         $queryNodeParser
             ->addNodeParser(new Xiag\NodeParser\Query\GroupNodeParser($queryNodeParser))
-
             ->addNodeParser(new XiagLogicalOperator\AndNodeParser($queryNodeParser))
             ->addNodeParser(new XiagLogicalOperator\OrNodeParser($queryNodeParser))
             ->addNodeParser(new XiagLogicalOperator\NotNodeParser($queryNodeParser))
-
             ->addNodeParser(new XiagComparisonOperator\Rql\InNodeParser($fieldParser, $arrayParser))
             ->addNodeParser(new XiagComparisonOperator\Rql\OutNodeParser($fieldParser, $arrayParser))
             ->addNodeParser(new XiagComparisonOperator\Rql\EqNodeParser($fieldParser, $scalarParser))
@@ -63,7 +63,6 @@ class RQLParser
             ->addNodeParser(new XiagComparisonOperator\Rql\LeNodeParser($fieldParser, $scalarParser))
             ->addNodeParser(new XiagComparisonOperator\Rql\GeNodeParser($fieldParser, $scalarParser))
             ->addNodeParser(new XiagComparisonOperator\Rql\LikeNodeParser($fieldParser, $globParser))
-
             ->addNodeParser(new XiagComparisonOperator\Fiql\InNodeParser($fieldParser, $arrayParser))
             ->addNodeParser(new XiagComparisonOperator\Fiql\OutNodeParser($fieldParser, $arrayParser))
             ->addNodeParser(new XiagComparisonOperator\Fiql\EqNodeParser($fieldParser, $scalarParser))
@@ -79,6 +78,7 @@ class RQLParser
             ->addNodeParser($queryNodeParser)
             ->addNodeParser(new Xiag\NodeParser\SortNodeParser($fieldParser))
             ->addNodeParser(new Xiag\NodeParser\LimitNodeParser($integerParser));
+
         return new Xiag\Parser($parserChain);
     }
 
