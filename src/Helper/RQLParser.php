@@ -39,7 +39,8 @@ class RQLParser
      */
     public static function createFiltersOnly()
     {
-        $scalarParser = (new Xiag\ValueParser\ScalarParser())
+        $scalarParser = new Xiag\ValueParser\ScalarParser();
+        $scalarParser
             ->registerTypeCaster('string', new Xiag\TypeCaster\StringTypeCaster())
             ->registerTypeCaster('integer', new Xiag\TypeCaster\IntegerTypeCaster())
             ->registerTypeCaster('float', new Xiag\TypeCaster\FloatTypeCaster())
@@ -53,7 +54,6 @@ class RQLParser
         $queryNodeParser = new Xiag\NodeParser\QueryNodeParser();
         $queryNodeParser
             ->addNodeParser(new Xiag\NodeParser\Query\GroupNodeParser($queryNodeParser))
-
             ->addNodeParser(new XiagLogicalOperator\AndNodeParser($queryNodeParser))
             ->addNodeParser(new XiagLogicalOperator\OrNodeParser($queryNodeParser))
             ->addNodeParser(new XiagLogicalOperator\NotNodeParser($queryNodeParser))
