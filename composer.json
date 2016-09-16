@@ -1,6 +1,6 @@
 {
   "name": "andreas-glaser/doctrine-rql",
-  "description": "Parses and applies RQL scripts to doctrine query builders",
+  "description": "Parses and applies RQL/FIQL scripts to doctrine query builders",
   "keywords": [
     "php",
     "doctrine",
