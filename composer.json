@@ -18,7 +18,7 @@
   ],
   "require": {
     "php": ">=5.5",
-    "xiag/rql-parser": "^1",
+    "xiag/rql-parser": "^2",
     "doctrine/orm": "^2.5",
     "andreas-glaser/php-helpers": "^1",
     "doctrine/data-fixtures": "^1.1"
