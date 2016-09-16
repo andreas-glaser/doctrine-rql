@@ -6,6 +6,8 @@ use Xiag\Rql\Parser as Xiag;
 use Xiag\Rql\Parser\NodeParser\Query\LogicalOperator as XiagLogicalOperator;
 use Xiag\Rql\Parser\NodeParser\Query\ComparisonOperator as XiagComparisonOperator;
 
+use AndreasGlaser\DoctrineRql as BaseAG;
+
 /**
  * Class RQLParser
  *
@@ -81,22 +83,25 @@ class RQLParser
             ->addNodeParser($queryNodeParser)
             ->addNodeParser(new Xiag\NodeParser\SortNodeParser($fieldParser))
             ->addNodeParser(new Xiag\NodeParser\LimitNodeParser($integerParser));
+
         return new Xiag\Parser($parserChain);
     }
 
     /**
      * Parses given RQL string into an abstract syntax tree (AST).
      *
-     * @param \Xiag\Rql\Parser\Parser $parser
-     * @param string                  $rql
+     * Permit some special characters like dot, space and underline on strings passed as parameters.
      *
+     * @param string                  $rql
+     * @param \Xiag\Rql\Parser\Parser $parser
      * @return \Xiag\Rql\Parser\Query
+     *
      * @author Andreas Glaser
+     * @author Rodrigo de Aquino <rodrigo@totlab.com.br>
      */
     public static function parse(Xiag\Parser $parser, $rql)
     {
-        $lexer = new Xiag\Lexer();
-
+        $lexer = new BaseAG\Lexer();
         return $parser->parse($lexer->tokenize($rql));
     }
 

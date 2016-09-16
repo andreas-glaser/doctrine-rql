@@ -9,8 +9,9 @@ use Xiag\Rql\Parser\Glob;
 use Xiag\Rql\Parser\Node;
 use Xiag\Rql\Parser\Node\AbstractQueryNode;
 use Xiag\Rql\Parser\Node\Query\AbstractArrayOperatorNode;
-use Xiag\Rql\Parser\Node\Query\AbstractLogicOperatorNode;
+use Xiag\Rql\Parser\Node\Query\AbstractLogicalOperatorNode;
 use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
+use Xiag\Rql\Parser\Node\Query\LogicalOperator;
 use Xiag\Rql\Parser\Query as RqlQuery;
 
 /**
@@ -46,9 +47,9 @@ class ORMVisitor
      * @var array
      */
     protected $logicMap = [
-        'Xiag\Rql\Parser\Node\Query\LogicOperator\AndNode' => '\Doctrine\ORM\Query\Expr\Andx',
-        'Xiag\Rql\Parser\Node\Query\LogicOperator\OrNode'  => '\Doctrine\ORM\Query\Expr\Orx',
-        'Xiag\Rql\Parser\Node\Query\LogicOperator\NotNode' => '\AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\Notx',
+        'Xiag\Rql\Parser\Node\Query\LogicalOperator\AndNode' => '\Doctrine\ORM\Query\Expr\Andx',
+        'Xiag\Rql\Parser\Node\Query\LogicalOperator\OrNode'  => '\Doctrine\ORM\Query\Expr\Orx',
+        'Xiag\Rql\Parser\Node\Query\LogicalOperator\NotNode' => '\AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\Notx',
     ];
 
     /**
@@ -79,9 +80,12 @@ class ORMVisitor
 
         $this->qb = $qb;
 
-        if ($autoRootAlias) {
+        if ($autoRootAlias)
+        {
             $this->autoRootAlias = ArrayHelper::getFirstIndex($this->qb->getRootAliases());
-        } else {
+        }
+        else
+        {
             $this->autoRootAlias = null;
         }
 
@@ -104,14 +108,17 @@ class ORMVisitor
         $rootAlias = ArrayHelper::getFirstIndex($this->qb->getRootAliases());
         $this->aliasMap[$rootAlias] = $rootAlias;
 
-        if (array_key_exists($rootAlias, $this->qb->getDQLParts()['join'])) {
+        if (array_key_exists($rootAlias, $this->qb->getDQLParts()['join']))
+        {
             /** @var Expr\Join $part */
-            foreach ($this->qb->getDQLParts()['join'][$rootAlias] AS $part) {
+            foreach ($this->qb->getDQLParts()['join'][$rootAlias] AS $part)
+            {
                 $alias = $part->getAlias();
                 $join = $part->getJoin();
                 $path = $alias;
                 $pieces = explode('.', $join);
-                if ($parentAlias = ArrayHelper::getKeyByValue($this->aliasMap, $pieces[0])) {
+                if ($parentAlias = ArrayHelper::getKeyByValue($this->aliasMap, $pieces[0]))
+                {
                     $path = $parentAlias . '.' . $alias;
                 }
                 $this->aliasMap[$path] = $alias;
@@ -128,14 +135,21 @@ class ORMVisitor
      */
     protected function walkNodes(AbstractQueryNode $node)
     {
-        if ($node instanceof AbstractScalarOperatorNode) {
+        if ($node instanceof AbstractScalarOperatorNode)
+        {
             return $this->visitScalar($node);
-        } elseif ($node instanceof AbstractArrayOperatorNode) {
+        }
+        elseif ($node instanceof AbstractArrayOperatorNode)
+        {
             return $this->visitArray($node);
-        } elseif ($node instanceof AbstractLogicOperatorNode) {
-            return $this->visitLogic($node);
-        } else {
-            throw new VisitorException('Not supported');
+        }
+        elseif ($node instanceof AbstractLogicalOperatorNode)
+        {
+            return $this->visitLogical($node);
+        }
+        else
+        {
+            throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
     }
 
@@ -147,19 +161,23 @@ class ORMVisitor
      */
     protected function visitQuery(RqlQuery $query)
     {
-        if ($selectNode = $query->getSelect()) {
+        if ($selectNode = $query->getSelect())
+        {
             // todo: Implement this
         }
 
-        if ($abstractQueryNode = $query->getQuery()) {
+        if ($abstractQueryNode = $query->getQuery())
+        {
             $this->qb->andWhere($this->walkNodes($abstractQueryNode));
         }
 
-        if ($query->getSort()) {
+        if ($query->getSort())
+        {
             $this->visitSort($query->getSort());
         }
 
-        if ($query->getLimit()) {
+        if ($query->getLimit())
+        {
             $this->visitLimit($query->getLimit());
         }
     }
@@ -173,8 +191,9 @@ class ORMVisitor
      */
     protected function visitScalar(AbstractScalarOperatorNode $node)
     {
-        if (!$method = ArrayHelper::get($this->scalarMap, get_class($node))) {
-            throw new VisitorException('Unsupported');
+        if (!$method = ArrayHelper::get($this->scalarMap, get_class($node)))
+        {
+            throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
 
         $parameterName = ':param_' . uniqid();
@@ -201,8 +220,9 @@ class ORMVisitor
      */
     protected function visitArray(AbstractArrayOperatorNode $node)
     {
-        if (!$method = ArrayHelper::get($this->arrayMap, get_class($node))) {
-            throw new VisitorException('Unsupported');
+        if (!$method = ArrayHelper::get($this->arrayMap, get_class($node)))
+        {
+            throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
 
         $pathToField = $node->getField();
@@ -212,25 +232,29 @@ class ORMVisitor
     }
 
     /**
-     * @param \Xiag\Rql\Parser\Node\Query\AbstractLogicOperatorNode $node
+     * @param \Xiag\Rql\Parser\Node\Query\AbstractLogicalOperatorNode $node
      *
      * @return mixed
      * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
      * @author Andreas Glaser
      */
-    protected function visitLogic(AbstractLogicOperatorNode $node)
+    protected function visitLogical(AbstractLogicalOperatorNode $node)
     {
-        if (!$class = ArrayHelper::get($this->logicMap, get_class($node))) {
-            throw new VisitorException('Unsupported');
+        if (!$class = ArrayHelper::get($this->logicMap, get_class($node)))
+        {
+            throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
 
         $expr = new $class();
-        foreach ($node->getQueries() as $query) {
+
+        foreach ($node->getQueries() as $query)
+        {
             $expr->add($this->walkNodes($query));
         }
 
         // Notx workaround
-        if ($node instanceof Node\Query\LogicOperator\NotNode) {
+        if ($node instanceof Node\Query\LogicalOperator\NotNode)
+        {
             $expr = new Expr\Func('NOT', $expr->getParts());
         }
 
