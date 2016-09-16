@@ -2,6 +2,7 @@
 
 namespace AndreasGlaser\DoctrineRql\Visitor;
 
+use AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\ExpressionBuilder;
 use AndreasGlaser\Helpers\ArrayHelper;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
@@ -19,9 +20,15 @@ use Xiag\Rql\Parser\Query as RqlQuery;
  *
  * @package AndreasGlaser\DoctrineRql\Visitor
  * @author  Andreas Glaser
+ * @author  Dominic Tubach <dominic.tubach@to.com>
  */
 class ORMVisitor
 {
+    /**
+     * @var ExpressionBuilder
+     */
+    private $expressionBuilder;
+
     /**
      * @var array
      */
@@ -127,6 +134,20 @@ class ORMVisitor
     }
 
     /**
+     * @return ExpressionBuilder
+     *
+     * @author Dominic Tubach <dominic.tubach@to.com>
+     */
+    protected function getExpressionBuilder()
+    {
+        if (null === $this->expressionBuilder) {
+            $this->expressionBuilder = new ExpressionBuilder();
+        }
+
+        return $this->expressionBuilder;
+    }
+
+    /**
      * @param \Xiag\Rql\Parser\Node\AbstractQueryNode $node
      *
      * @return mixed
@@ -145,7 +166,7 @@ class ORMVisitor
         }
         elseif ($node instanceof AbstractLogicalOperatorNode)
         {
-            return $this->visitLogical($node);
+            return $this->visitLogic($node);
         }
         else
         {
@@ -188,6 +209,7 @@ class ORMVisitor
      * @return mixed
      * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
      * @author Andreas Glaser
+     * @author Dominic Tubach <dominic.tubach@to.com>
      */
     protected function visitScalar(AbstractScalarOperatorNode $node)
     {
@@ -198,7 +220,8 @@ class ORMVisitor
 
         $parameterName = ':param_' . uniqid();
         $pathToField = $node->getField();
-        $exp = $this->qb->expr()->$method($this->pathToAlias($pathToField), $parameterName);
+
+        $exp = $this->getExpressionBuilder()->$method($this->pathToAlias($pathToField), $parameterName);
 
         $parameter = $node->getValue();
         if ($parameter instanceof Glob)
@@ -226,9 +249,9 @@ class ORMVisitor
         }
 
         $pathToField = $node->getField();
-        $exp = $this->qb->expr()->$method($this->pathToAlias($pathToField), $node->getValues());
+        $expr = $this->qb->expr()->$method($this->pathToAlias($pathToField), $node->getValues());
 
-        return $exp;
+        return $expr;
     }
 
     /**
@@ -238,7 +261,7 @@ class ORMVisitor
      * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
      * @author Andreas Glaser
      */
-    protected function visitLogical(AbstractLogicalOperatorNode $node)
+    protected function visitLogic(AbstractLogicalOperatorNode $node)
     {
         if (!$class = ArrayHelper::get($this->logicMap, get_class($node)))
         {
