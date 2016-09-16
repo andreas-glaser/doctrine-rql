@@ -1,6 +1,6 @@
 {
   "name": "andreas-glaser/doctrine-rql",
-  "description": "Parses and applies RQL scripts to doctrine query builders",
+  "description": "Parses and applies RQL/FIQL scripts to doctrine query builders",
   "keywords": [
     "php",
     "doctrine",
@@ -17,9 +17,9 @@
     }
   ],
   "require": {
-    "php": ">=5.6",
-    "xiag/rql-parser": "*",
-    "xiag/rql-command": "*",
+    "php": ">=5.5",
+    "xiag/rql-parser": "^2",
+    "xiag/rql-command": "^1",
     "doctrine/orm": "^2.5",
     "andreas-glaser/php-helpers": "dev-master",
     "doctrine/data-fixtures": "^1.1"
