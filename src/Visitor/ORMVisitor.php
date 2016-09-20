@@ -2,6 +2,7 @@
 
 namespace AndreasGlaser\DoctrineRql\Visitor;
 
+use AndreasGlaser\DoctrineRql\Extension\Xiag\Node\Query\AbstractNullComparisonOperatorNode;
 use AndreasGlaser\Helpers\ArrayHelper;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
@@ -31,6 +32,14 @@ class ORMVisitor
         'Xiag\Rql\Parser\Node\Query\ScalarOperator\LeNode'   => 'lte',
         'Xiag\Rql\Parser\Node\Query\ScalarOperator\GeNode'   => 'gte',
         'Xiag\Rql\Parser\Node\Query\ScalarOperator\LikeNode' => 'like',
+    ];
+
+    /**
+     * @var array
+     */
+    protected $nullOperatorMap = [
+        'AndreasGlaser\DoctrineRql\Extension\Xiag\Node\Query\IsNullNode'    => 'isNull',
+        'AndreasGlaser\DoctrineRql\Extension\Xiag\Node\Query\IsNotNullNode' => 'isNotNull',
     ];
 
     /**
@@ -133,6 +142,8 @@ class ORMVisitor
             return $this->visitArray($node);
         } elseif ($node instanceof AbstractLogicOperatorNode) {
             return $this->visitLogic($node);
+        } elseif ($node instanceof AbstractNullComparisonOperatorNode) {
+            return $this->visitNullOperatorNode($node);
         } else {
             throw new VisitorException('Not supported');
         }
@@ -198,9 +209,9 @@ class ORMVisitor
         }
 
         $pathToField = $node->getField();
-        $exp = $this->qb->expr()->$method($this->pathToAlias($pathToField), $node->getValues());
+        $expr = $this->qb->expr()->$method($this->pathToAlias($pathToField), $node->getValues());
 
-        return $exp;
+        return $expr;
     }
 
     /**
@@ -227,6 +238,27 @@ class ORMVisitor
         }
 
         return $expr;
+    }
+
+    /**
+     * Apply $queryBuilder->expr()->isNull(fieldName) / $queryBuilder->expr()->isNotNull()
+     *
+     * @param \AndreasGlaser\DoctrineRql\Extension\Xiag\Node\Query\AbstractNullComparisonOperatorNode $node
+     *
+     * @return mixed
+     * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
+     * @author Andreas Glaser
+     */
+    protected function visitNullOperatorNode(AbstractNullComparisonOperatorNode $node)
+    {
+        if (!$method = ArrayHelper::get($this->nullOperatorMap, get_class($node))) {
+            throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
+        }
+
+        $pathToField = $node->getField();
+        $exp = $this->qb->expr()->$method($this->pathToAlias($pathToField));
+
+        return $exp;
     }
 
     /**

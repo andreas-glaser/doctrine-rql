@@ -24,6 +24,11 @@ class Cart
     public $id;
 
     /**
+     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
+     */
+    public $deletedAt;
+
+    /**
      * Product[]|ArrayCollection
      *
      * @ORM\ManyToMany(targetEntity="Product")

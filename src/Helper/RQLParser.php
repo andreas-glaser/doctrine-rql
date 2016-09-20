@@ -2,6 +2,8 @@
 
 namespace AndreasGlaser\DoctrineRql\Helper;
 
+use AndreasGlaser\DoctrineRql\Extension\Xiag\TokenParser\Query\Basic\IsNotNullTokenParser;
+use AndreasGlaser\DoctrineRql\Extension\Xiag\TokenParser\Query\Basic\IsNullTokenParser;
 use Xiag\Rql\Parser as Xiag;
 
 /**
@@ -55,6 +57,11 @@ class RQLParser
             ->addTokenParser(new Xiag\TokenParser\Query\Fiql\ScalarOperator\LeTokenParser())
             ->addTokenParser(new Xiag\TokenParser\Query\Fiql\ScalarOperator\GeTokenParser())
             ->addTokenParser(new Xiag\TokenParser\Query\Fiql\ScalarOperator\LikeTokenParser());
+
+        // custom additions
+        $queryTokenParser
+            ->addTokenParser(new IsNullTokenParser())
+            ->addTokenParser(new IsNotNullTokenParser());
 
         return (new Xiag\Parser(
             (new Xiag\ExpressionParser())

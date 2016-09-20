@@ -3,7 +3,7 @@ Parses and applies RQL scripts to doctrine query builders.
 
 ##Installation
 ```shell
-composer require andreas-glaser/doctrine-rql
+composer require andreas-glaser/doctrine-rql 0.1
 ```
 
 ##Usage
@@ -31,3 +31,13 @@ $cartEntities = $qb
     ->getQuery()
     ->execute();
 ```
+
+A full list of available RQL/FIQL operators can be found at:
+
+[https://github.com/xiag-ag/rql-parser/tree/1.0.x#operators](https://github.com/xiag-ag/rql-parser/tree/1.0.x#operators)
+
+### Additional Operators ###
+
+ - NULL Comparison
+    - `isnull(fieldName)`
+    - `isnotnull(fieldName)`
