@@ -1,10 +1,12 @@
 {
   "name": "andreas-glaser/doctrine-rql",
-  "description": "Parses and applies RQL scripts to doctrine query builders",
+  "description": "Parses and applies RQL/FIQL scripts to doctrine orm query builders",
   "keywords": [
     "php",
     "doctrine",
-    "database"
+    "database",
+    "rql",
+    "fiql"
   ],
   "homepage": "https://github.com/andreas-glaser/doctrine-rql",
   "type": "library",
