@@ -1,5 +1,5 @@
 #doctrine-rql
-Parses and applies RQL scripts to doctrine query builders.
+Parses and applies RQL/FIQL scripts to doctrine orm query builders.
 
 ##Installation
 ```shell
