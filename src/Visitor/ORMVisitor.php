@@ -2,7 +2,8 @@
 
 namespace AndreasGlaser\DoctrineRql\Visitor;
 
-use AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\ExpressionBuilder;
+use AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\ExpressionBuilder;
+use AndreasGlaser\DoctrineRql\Extension\Xiag\Rql\Parser\Node\Query\AbstractNullOperatorNode;
 use AndreasGlaser\Helpers\ArrayHelper;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
@@ -39,6 +40,14 @@ class ORMVisitor
         'Xiag\Rql\Parser\Node\Query\ScalarOperator\LeNode'   => 'lte',
         'Xiag\Rql\Parser\Node\Query\ScalarOperator\GeNode'   => 'gte',
         'Xiag\Rql\Parser\Node\Query\ScalarOperator\LikeNode' => 'like',
+    ];
+
+    /**
+     * @var array
+     */
+    protected $nullOperatorMap = [
+        'AndreasGlaser\DoctrineRql\Extension\Xiag\Rql\Parser\Node\Query\NullOperator\IsNullNode'    => 'isNull',
+        'AndreasGlaser\DoctrineRql\Extension\Xiag\Rql\Parser\Node\Query\NullOperator\IsNotNullNode' => 'isNotNull',
     ];
 
     /**
@@ -87,7 +96,7 @@ class ORMVisitor
         $this->qb = $qb;
 
         if ($autoRootAlias) {
-            $this->autoRootAlias = ArrayHelper::getFirstIndex($this->qb->getRootAliases());
+            $this->autoRootAlias = ArrayHelper::getFirstValue($this->qb->getRootAliases());
         } else {
             $this->autoRootAlias = null;
         }
@@ -96,6 +105,11 @@ class ORMVisitor
         $this->visitQuery($query);
     }
 
+    /**
+     * Resets values for object re-use.
+     *
+     * @author Andreas Glaser
+     */
     public function reset()
     {
         $this->qb = null;
@@ -108,7 +122,7 @@ class ORMVisitor
      */
     protected function buildPathToAliasMap()
     {
-        $rootAlias = ArrayHelper::getFirstIndex($this->qb->getRootAliases());
+        $rootAlias = ArrayHelper::getFirstValue($this->qb->getRootAliases());
         $this->aliasMap[$rootAlias] = $rootAlias;
 
         if (array_key_exists($rootAlias, $this->qb->getDQLParts()['join'])) {
@@ -155,6 +169,8 @@ class ORMVisitor
             return $this->visitArray($node);
         } elseif ($node instanceof AbstractLogicalOperatorNode) {
             return $this->visitLogic($node);
+        } elseif ($node instanceof AbstractNullOperatorNode) {
+            return $this->visitNullOperatorNode($node);
         } else {
             throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
@@ -201,15 +217,16 @@ class ORMVisitor
 
         $parameterName = ':param_' . uniqid();
         $pathToField = $node->getField();
-        $exp = $this->getExpressionBuilder()->$method($this->pathToAlias($pathToField), $parameterName);
+        $expr = $this->getExpressionBuilder()->$method($this->pathToAlias($pathToField), $parameterName);
         $parameter = $node->getValue();
+
         if ($parameter instanceof Glob) {
             $parameter = $parameter->toLike();
         }
 
         $this->qb->setParameter($parameterName, $parameter);
 
-        return $exp;
+        return $expr;
     }
 
     /**
@@ -255,6 +272,27 @@ class ORMVisitor
         }
 
         return $expr;
+    }
+
+    /**
+     * Apply $queryBuilder->expr()->isNull(fieldName) / $queryBuilder->expr()->isNotNull()
+     *
+     * @param \AndreasGlaser\DoctrineRql\Extension\Xiag\Rql\Parser\Node\Query\AbstractNullOperatorNode $node
+     *
+     * @return mixed
+     * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
+     * @author Andreas Glaser
+     */
+    protected function visitNullOperatorNode(AbstractNullOperatorNode $node)
+    {
+        if (!$method = ArrayHelper::get($this->nullOperatorMap, get_class($node))) {
+            throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
+        }
+
+        $pathToField = $node->getField();
+        $exp = $this->qb->expr()->$method($this->pathToAlias($pathToField));
+
+        return $exp;
     }
 
     /**

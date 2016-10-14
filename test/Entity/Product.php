@@ -33,6 +33,16 @@ class Product
      */
     public $photos;
 
+    /**
+     * @ORM\Column(name="published_at", type="datetime", nullable=true)
+     */
+    public $publishedAt;
+
+    /**
+     * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
+     */
+    public $deletedAt;
+
     public function __construct()
     {
         $this->photos = new ArrayCollection();
