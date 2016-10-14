@@ -14,7 +14,7 @@ namespace TestApp;
 
 use AndreasGlaser\DoctrineRql\Factory\ORMVisitorFactory;
 
-$rqlString = $_GET['rql']; // ?rql=and(eq(cart%2Eid,123),eq(cart%2Earchived,0))
+$rqlString = $_GET['rql']; // ?rql=and(eq(cart.id,123),eq(cart.archived,0))
 
 /** @var QueryBuilder $qb */
 $qb = $entityManager->createQueryBuilder();
