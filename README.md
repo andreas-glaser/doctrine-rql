@@ -1,9 +1,9 @@
 #doctrine-rql
-Parses and applies RQL scripts to doctrine query builders.
+Parses and applies RQL/FIQL scripts to doctrine orm query builders.
 
 ##Installation
 ```shell
-composer require andreas-glaser/doctrine-rql
+composer require andreas-glaser/doctrine-rql 0.2
 ```
 
 ##Usage
@@ -14,7 +14,7 @@ namespace TestApp;
 
 use AndreasGlaser\DoctrineRql\Factory\ORMVisitorFactory;
 
-$rqlString = $_GET['rql']; // ?rql=and(eq(cart.id,123),eq(cart.archived,0))
+$rqlString = $_GET['rql']; // ?rql=and(eq(cart%2Eid,123),eq(cart%2Earchived,0))
 
 /** @var QueryBuilder $qb */
 $qb = $entityManager->createQueryBuilder();
@@ -31,3 +31,13 @@ $cartEntities = $qb
     ->getQuery()
     ->execute();
 ```
+
+A full list of available RQL/FIQL operators can be found at:
+
+[https://github.com/xiag-ag/rql-parser/#operators](https://github.com/xiag-ag/rql-parser/#operators)
+
+### Additional Operators ###
+
+ - NULL Comparison
+    - `isnull(fieldName)`
+    - `isnotnull(fieldName)`
