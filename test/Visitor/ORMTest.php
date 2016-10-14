@@ -67,7 +67,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase
         $qbTest1 = clone $qb;
 
         $productName = Helper\StringEncode::encode('Powered Wheelchair X200');
-        $rql = sprintf('and(gt(cart%%2Eid,2),eq(cart%%2Eproducts%%2Ename,%s))', $productName); // user input
+        $rql = sprintf('and(gt(cart.id,2),eq(cart.products.name,%s))', $productName); // user input
 
         ORMVisitorFactory::appendFiltersOnly($qbTest1, $rql, false);
 
@@ -75,7 +75,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase
 
         $qbTest2 = clone $qb;
 
-        $rql = '(eq(cart%2Eid,string:1)|lt(cart%2Eid,2)|(cart%2Eid<>3&cart%2Eid>=string:4&cart%2Eid=eq=boolean:1))&cart%2Eid!=5&not(or(cart%2Eid=6,eq(cart%2Eid,2)))&cart%2Eid=1&(cart%2Eid==2|cart%2Eid<-3|in(cart%2Eid,(2,float:3)))&sort(+cart%2Eid,-cart%2Eid)&limit(1,2)';
+        $rql = '(eq(cart.id,string:1)|lt(cart.id,2)|(cart.id<>3&cart.id>=string:4&cart.id=eq=boolean:1))&cart.id!=5&not(or(cart.id=6,eq(cart.id,2)))&cart.id=1&(cart.id==2|cart.id<-3|in(cart.id,(2,float:3)))&sort(+cart.id,-cart.id)&limit(1,2)';
 
         ORMVisitorFactory::appendFiltersOnly($qbTest2, $rql, false);
 
@@ -95,7 +95,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase
         $qbTest = clone $qb;
 
         $productName = Helper\StringEncode::encode('Product ') . '?';
-        $rql = sprintf('like(product%%2Ename,%s)', $productName); // user input
+        $rql = sprintf('like(product.name,%s)', $productName); // user input
 
         ORMVisitorFactory::appendFiltersOnly($qbTest, $rql, false);
 
@@ -120,7 +120,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase
         $qbTest = clone $qb;
 
         $productName = '*' . Helper\StringEncode::encode('a%b_c\\d?e*f') . '?';
-        $rql = sprintf('like(product%%2Ename,%s)', $productName); // user input
+        $rql = sprintf('like(product.name,%s)', $productName); // user input
 
         ORMVisitorFactory::appendFiltersOnly($qbTest, $rql, false);
 
@@ -196,7 +196,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase
             ->leftJoin('products.photos', 'photos')
             ->leftJoin('photos.photo', 'photo');
 
-        $rql = 'and(isnull(cart%2EdeletedAt),isnotnull(cart%2Eproducts%2EpublishedAt),gt(cart%2Eproducts%2EpublishedAt,2015%2D06%2D02),or(isnull(cart%2Eproducts%2Eid),gt(cart%2Eproducts%2Eid,1000)))';
+        $rql = 'and(isnull(cart.deletedAt),isnotnull(cart.products.publishedAt),gt(cart.products.publishedAt,2015%2D06%2D02),or(isnull(cart.products.id),gt(cart.products.id,1000)))';
 
         ORMVisitorFactory::appendFiltersOnly($qb, $rql, false);
 
