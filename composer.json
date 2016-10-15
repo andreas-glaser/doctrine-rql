@@ -1,10 +1,13 @@
 {
   "name": "andreas-glaser/doctrine-rql",
-  "description": "Parses and applies RQL scripts to doctrine query builders",
+  "description": "Parses and applies RQL/FIQL scripts to doctrine orm query builders",
   "keywords": [
     "php",
     "doctrine",
-    "database"
+    "database",
+    "rql",
+    "fiql",
+    "api"
   ],
   "homepage": "https://github.com/andreas-glaser/doctrine-rql",
   "type": "library",
@@ -17,15 +20,15 @@
     }
   ],
   "require": {
-    "php": ">=5.5",
+    "php": "^5.5||^7",
     "xiag/rql-parser": "^2",
-    "doctrine/orm": "^2.5",
-    "andreas-glaser/php-helpers": "^1",
-    "doctrine/data-fixtures": "^1.1"
+    "doctrine/orm": "^2.4.8",
+    "andreas-glaser/php-helpers": "^1"
   },
   "require-dev": {
-    "phpunit/phpunit": "^4",
-    "symfony/var-dumper": "^3.0"
+    "phpunit/phpunit": "^5",
+    "symfony/var-dumper": "@stable",
+    "doctrine/data-fixtures": "@stable"
   },
   "suggest": {},
   "config": {
