@@ -25,6 +25,7 @@ class ORMVisitorFactory
      * @param bool                       $autoRootAlias
      *
      * @author Andreas Glaser
+     * @deprecated Use ORMVisitorFactory::appendFiltersOnly() as SELECT is unsupported in 0.1/0.2
      */
     public static function appendAll(QueryBuilder &$qb, $rqlString, $autoRootAlias = true)
     {
