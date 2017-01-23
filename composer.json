@@ -20,7 +20,7 @@
     }
   ],
   "require": {
-    "php": "^5.5||^7",
+    "php": "^5.6||^7",
     "xiag/rql-parser": "^2",
     "doctrine/orm": "^2.4.8",
     "andreas-glaser/php-helpers": "^1"
