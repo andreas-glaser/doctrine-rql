@@ -6,7 +6,7 @@ Parses and applies RQL/FIQL scripts to doctrine orm query builders.
 composer require andreas-glaser/doctrine-rql 0.2.*
 ```
 
-##Usage
+##Usage Test
 ```php
 <?php
 
