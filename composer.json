@@ -26,7 +26,7 @@
     "andreas-glaser/php-helpers": "^1"
   },
   "require-dev": {
-    "phpunit/phpunit": "^5",
+    "phpunit/phpunit": "@stable",
     "symfony/var-dumper": "@stable",
     "doctrine/data-fixtures": "@stable"
   },
