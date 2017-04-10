@@ -1,12 +1,12 @@
-#doctrine-rql
+# doctrine-rql
 Parses and applies RQL/FIQL scripts to doctrine orm query builders.
 
-##Installation
+## Installation
 ```shell
 composer require andreas-glaser/doctrine-rql 0.2.*
 ```
 
-##Usage Test
+## Usage Test
 ```php
 <?php
 
