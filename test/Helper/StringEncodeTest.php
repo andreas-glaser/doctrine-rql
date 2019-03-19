@@ -3,6 +3,7 @@
 namespace AndreasGlaser\DoctrineRql\Visitor;
 
 use AndreasGlaser\DoctrineRql\Helper\StringEncode;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class StringEncodeTest
@@ -10,7 +11,7 @@ use AndreasGlaser\DoctrineRql\Helper\StringEncode;
  * @package AndreasGlaser\DoctrineRql\Visitor
  * @author  Andreas Glaser
  */
-class StringEncodeTest extends \PHPUnit_Framework_TestCase
+class StringEncodeTest extends TestCase
 {
     /**
      * @author Andreas Glaser

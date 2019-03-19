@@ -9,6 +9,7 @@ use Doctrine\Common\DataFixtures;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM;
 use Doctrine\ORM\EntityManager;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class ORMVisitor
@@ -16,7 +17,7 @@ use Doctrine\ORM\EntityManager;
  * @package AndreasGlaser\DoctrineRql
  * @author  Andreas Glaser
  */
-class ORMTest extends \PHPUnit_Framework_TestCase
+class ORMTest extends TestCase
 {
     /**
      * @var EntityManager

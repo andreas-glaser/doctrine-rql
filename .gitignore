@@ -4,3 +4,4 @@ composer.phar
 vendor/
 composer.lock
 bin/
+.phpunit.result.cache
