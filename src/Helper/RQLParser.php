@@ -2,8 +2,8 @@
 
 namespace AndreasGlaser\DoctrineRql\Helper;
 
-use AndreasGlaser\DoctrineRql\Extension\Xiag\Rql\Parser\Lexer;
 use AndreasGlaser\DoctrineRql\Extension\Xiag\Rql\Parser\NodeParser\Query\ComparisonOperator as ExtensionComparisonOperator;
+use AndreasGlaser\DoctrineRql\Factory\LexerFactory;
 use Xiag\Rql\Parser as Xiag;
 use Xiag\Rql\Parser\NodeParser\Query\ComparisonOperator as XiagComparisonOperator;
 use Xiag\Rql\Parser\NodeParser\Query\LogicalOperator as XiagLogicalOperator;
@@ -106,7 +106,7 @@ class RQLParser
      */
     public static function parse(Xiag\Parser $parser, $rql)
     {
-        $lexer = new Lexer();
+        $lexer = LexerFactory::createLexer();
 
         return $parser->parse($lexer->tokenize($rql));
     }
