@@ -3,17 +3,17 @@
 namespace AndreasGlaser\DoctrineRql\Visitor;
 
 use AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\ExpressionBuilder;
-use AndreasGlaser\DoctrineRql\Extension\Xiag\Rql\Parser\Node\Query\AbstractNullOperatorNode;
+use AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\AbstractNullOperatorNode;
 use AndreasGlaser\Helpers\ArrayHelper;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
-use Xiag\Rql\Parser\Glob;
-use Xiag\Rql\Parser\Node;
-use Xiag\Rql\Parser\Node\AbstractQueryNode;
-use Xiag\Rql\Parser\Node\Query\AbstractArrayOperatorNode;
-use Xiag\Rql\Parser\Node\Query\AbstractLogicalOperatorNode;
-use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
-use Xiag\Rql\Parser\Query as RqlQuery;
+use Graviton\RqlParser\Glob;
+use Graviton\RqlParser\Node;
+use Graviton\RqlParser\Node\AbstractQueryNode;
+use Graviton\RqlParser\Node\Query\AbstractArrayOperatorNode;
+use Graviton\RqlParser\Node\Query\AbstractLogicalOperatorNode;
+use Graviton\RqlParser\Node\Query\AbstractScalarOperatorNode;
+use Graviton\RqlParser\Query as RqlQuery;
 
 /**
  * Class ORMVisitor
@@ -33,38 +33,38 @@ class ORMVisitor
      * @var array
      */
     protected $scalarMap = [
-        'Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode'   => 'eq',
-        'Xiag\Rql\Parser\Node\Query\ScalarOperator\NeNode'   => 'neq',
-        'Xiag\Rql\Parser\Node\Query\ScalarOperator\LtNode'   => 'lt',
-        'Xiag\Rql\Parser\Node\Query\ScalarOperator\GtNode'   => 'gt',
-        'Xiag\Rql\Parser\Node\Query\ScalarOperator\LeNode'   => 'lte',
-        'Xiag\Rql\Parser\Node\Query\ScalarOperator\GeNode'   => 'gte',
-        'Xiag\Rql\Parser\Node\Query\ScalarOperator\LikeNode' => 'like',
+        'Graviton\RqlParser\Node\Query\ScalarOperator\EqNode'   => 'eq',
+        'Graviton\RqlParser\Node\Query\ScalarOperator\NeNode'   => 'neq',
+        'Graviton\RqlParser\Node\Query\ScalarOperator\LtNode'   => 'lt',
+        'Graviton\RqlParser\Node\Query\ScalarOperator\GtNode'   => 'gt',
+        'Graviton\RqlParser\Node\Query\ScalarOperator\LeNode'   => 'lte',
+        'Graviton\RqlParser\Node\Query\ScalarOperator\GeNode'   => 'gte',
+        'Graviton\RqlParser\Node\Query\ScalarOperator\LikeNode' => 'like',
     ];
 
     /**
      * @var array
      */
     protected $nullOperatorMap = [
-        'AndreasGlaser\DoctrineRql\Extension\Xiag\Rql\Parser\Node\Query\NullOperator\IsNullNode'    => 'isNull',
-        'AndreasGlaser\DoctrineRql\Extension\Xiag\Rql\Parser\Node\Query\NullOperator\IsNotNullNode' => 'isNotNull',
+        'AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator\IsNullNode'    => 'isNull',
+        'AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator\IsNotNullNode' => 'isNotNull',
     ];
 
     /**
      * @var array
      */
     protected $arrayMap = [
-        'Xiag\Rql\Parser\Node\Query\ArrayOperator\InNode'  => 'in',
-        'Xiag\Rql\Parser\Node\Query\ArrayOperator\OutNode' => 'notIn',
+        'Graviton\RqlParser\Node\Query\ArrayOperator\InNode'  => 'in',
+        'Graviton\RqlParser\Node\Query\ArrayOperator\OutNode' => 'notIn',
     ];
 
     /**
      * @var array
      */
     protected $logicMap = [
-        'Xiag\Rql\Parser\Node\Query\LogicalOperator\AndNode' => '\Doctrine\ORM\Query\Expr\Andx',
-        'Xiag\Rql\Parser\Node\Query\LogicalOperator\OrNode'  => '\Doctrine\ORM\Query\Expr\Orx',
-        'Xiag\Rql\Parser\Node\Query\LogicalOperator\NotNode' => '\AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\Notx',
+        'Graviton\RqlParser\Node\Query\LogicalOperator\AndNode' => '\Doctrine\ORM\Query\Expr\Andx',
+        'Graviton\RqlParser\Node\Query\LogicalOperator\OrNode'  => '\Doctrine\ORM\Query\Expr\Orx',
+        'Graviton\RqlParser\Node\Query\LogicalOperator\NotNode' => '\AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\Notx',
     ];
 
     /**
@@ -84,7 +84,7 @@ class ORMVisitor
 
     /**
      * @param \Doctrine\ORM\QueryBuilder $qb
-     * @param \Xiag\Rql\Parser\Query     $query
+     * @param \Graviton\RqlParser\Query     $query
      * @param bool                       $autoRootAlias
      *
      * @author Andreas Glaser
@@ -155,7 +155,7 @@ class ORMVisitor
     }
 
     /**
-     * @param \Xiag\Rql\Parser\Node\AbstractQueryNode $node
+     * @param \Graviton\RqlParser\Node\AbstractQueryNode $node
      *
      * @return mixed
      * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
@@ -177,7 +177,7 @@ class ORMVisitor
     }
 
     /**
-     * @param \Xiag\Rql\Parser\Query $query
+     * @param \Graviton\RqlParser\Query $query
      *
      * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
      * @author Andreas Glaser
@@ -202,7 +202,7 @@ class ORMVisitor
     }
 
     /**
-     * @param \Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode $node
+     * @param \Graviton\RqlParser\Node\Query\AbstractScalarOperatorNode $node
      *
      * @return mixed
      * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
@@ -230,7 +230,7 @@ class ORMVisitor
     }
 
     /**
-     * @param \Xiag\Rql\Parser\Node\Query\AbstractArrayOperatorNode $node
+     * @param \Graviton\RqlParser\Node\Query\AbstractArrayOperatorNode $node
      *
      * @return mixed
      * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
@@ -249,7 +249,7 @@ class ORMVisitor
     }
 
     /**
-     * @param \Xiag\Rql\Parser\Node\Query\AbstractLogicalOperatorNode $node
+     * @param \Graviton\RqlParser\Node\Query\AbstractLogicalOperatorNode $node
      *
      * @return mixed
      * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
@@ -277,7 +277,7 @@ class ORMVisitor
     /**
      * Apply $queryBuilder->expr()->isNull(fieldName) / $queryBuilder->expr()->isNotNull()
      *
-     * @param \AndreasGlaser\DoctrineRql\Extension\Xiag\Rql\Parser\Node\Query\AbstractNullOperatorNode $node
+     * @param \AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\AbstractNullOperatorNode $node
      *
      * @return mixed
      * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
@@ -296,7 +296,7 @@ class ORMVisitor
     }
 
     /**
-     * @param \Xiag\Rql\Parser\Node\SortNode $node
+     * @param \Graviton\RqlParser\Node\SortNode $node
      *
      * @author Andreas Glaser
      */
@@ -308,7 +308,7 @@ class ORMVisitor
     }
 
     /**
-     * @param \Xiag\Rql\Parser\Node\LimitNode $node
+     * @param \Graviton\RqlParser\Node\LimitNode $node
      *
      * @author Andreas Glaser
      */
