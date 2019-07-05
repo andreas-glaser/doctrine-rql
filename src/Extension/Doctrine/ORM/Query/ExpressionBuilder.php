@@ -15,9 +15,9 @@ class ExpressionBuilder extends Expr
      * @param string $x
      * @param mixed  $y
      *
-     * @return \Doctrine\ORM\Query\Expr\Comparison
+     * @return Expr\Comparison
      */
-    public function like($x, $y)
+    public function like($x, $y): Expr\Comparison
     {
         return parent::like($x, $y . " ESCAPE '\\'");
     }
@@ -26,9 +26,9 @@ class ExpressionBuilder extends Expr
      * @param string $x
      * @param mixed  $y
      *
-     * @return \Doctrine\ORM\Query\Expr\Comparison
+     * @return Expr\Comparison
      */
-    public function notLike($x, $y)
+    public function notLike($x, $y): Expr\Comparison
     {
         return parent::notLike($x, $y . " ESCAPE '\\'");
     }

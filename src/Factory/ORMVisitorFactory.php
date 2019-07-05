@@ -25,7 +25,7 @@ class ORMVisitorFactory
      *
      * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
      */
-    public static function appendFiltersOnly(QueryBuilder &$qb, string $rqlString, $autoRootAlias = true): void
+    public static function appendFiltersOnly(QueryBuilder &$qb, string $rqlString, bool $autoRootAlias = true): void
     {
         if (!static::$visitor) {
             static::$visitor = new ORMVisitor();

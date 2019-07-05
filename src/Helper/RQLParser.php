@@ -83,7 +83,7 @@ class RQLParser
      *
      * @return \Graviton\RqlParser\Query
      */
-    public static function parse(Graviton\Parser $parser, $rql): \Graviton\RqlParser\Query
+    public static function parse(Graviton\Parser $parser, string $rql): \Graviton\RqlParser\Query
     {
         $lexer = new Lexer();
 
@@ -93,11 +93,11 @@ class RQLParser
     /**
      * Short cut
      *
-     * @param $rql
+     * @param string $rql
      *
      * @return \Graviton\RqlParser\Query
      */
-    public static function parseFiltersOnly($rql): \Graviton\RqlParser\Query
+    public static function parseFiltersOnly(string $rql): \Graviton\RqlParser\Query
     {
         return static::parse(self::createFiltersOnly(), $rql);
     }

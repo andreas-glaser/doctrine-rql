@@ -3,6 +3,7 @@
 namespace AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\NodeParser\Query\ComparisonOperator;
 
 use AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\AbstractNullOperatorNode;
+use Graviton\RqlParser\AbstractNode;
 use Graviton\RqlParser\NodeParserInterface;
 use Graviton\RqlParser\SubParserInterface;
 use Graviton\RqlParser\Token;
@@ -29,23 +30,23 @@ abstract class AbstractNullComparisonRqlNodeParser implements NodeParserInterfac
     }
 
     /**
-     * @param $field
+     * @param string $field
      *
      * @return AbstractNullOperatorNode
      */
-    abstract protected function createNode($field);
+    abstract protected function createNode(string $field): AbstractNullOperatorNode;
 
     /**
      * @return string
      */
-    abstract protected function getOperatorName();
+    abstract protected function getOperatorName(): string;
 
     /**
-     * @param \Graviton\RqlParser\TokenStream $tokenStream
+     * @param TokenStream $tokenStream
      *
-     * @return \AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\AbstractNullOperatorNode
+     * @return AbstractNullOperatorNode
      */
-    public function parse(TokenStream $tokenStream)
+    public function parse(TokenStream $tokenStream): AbstractNode
     {
         $tokenStream->expect(Token::T_OPERATOR, $this->getOperatorName());
         $tokenStream->expect(Token::T_OPEN_PARENTHESIS);
@@ -56,11 +57,11 @@ abstract class AbstractNullComparisonRqlNodeParser implements NodeParserInterfac
     }
 
     /**
-     * @param \Graviton\RqlParser\TokenStream $tokenStream
+     * @param TokenStream $tokenStream
      *
      * @return bool
      */
-    public function supports(TokenStream $tokenStream)
+    public function supports(TokenStream $tokenStream): bool
     {
         return $tokenStream->test(Token::T_OPERATOR, $this->getOperatorName());
     }

@@ -14,7 +14,7 @@ class IsNotNullNode extends AbstractNullOperatorNode
     /**
      * @inheritdoc
      */
-    public function getNodeName()
+    public function getNodeName(): string
     {
         return 'isnotnull';
     }

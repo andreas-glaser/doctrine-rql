@@ -2,6 +2,7 @@
 
 namespace AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\NodeParser\Query\ComparisonOperator\Rql;
 
+use AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\AbstractNullOperatorNode;
 use AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator\IsNullNode;
 use AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\NodeParser\Query\ComparisonOperator\AbstractNullComparisonRqlNodeParser;
 
@@ -15,17 +16,17 @@ class IsNullNodeParser extends AbstractNullComparisonRqlNodeParser
     /**
      * @inheritdoc
      */
-    protected function getOperatorName()
+    protected function getOperatorName(): string
     {
         return 'isnull';
     }
 
     /**
-     * @param $field
+     * @param string $field
      *
-     * @return \AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator\IsNullNode
+     * @return IsNullNode
      */
-    protected function createNode($field)
+    protected function createNode(string $field): AbstractNullOperatorNode
     {
         return new IsNullNode($field);
     }

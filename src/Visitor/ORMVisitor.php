@@ -71,7 +71,7 @@ class ORMVisitor
     protected $qb;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $autoRootAlias;
 
@@ -87,7 +87,7 @@ class ORMVisitor
      *
      * @throws VisitorException
      */
-    public function append(QueryBuilder $qb, RqlQuery $query, $autoRootAlias = true): void
+    public function append(QueryBuilder $qb, RqlQuery $query, bool $autoRootAlias = true): void
     {
         $this->reset();
 
@@ -152,7 +152,7 @@ class ORMVisitor
     /**
      * @param AbstractQueryNode $node
      *
-     * @return mixed
+     * @return Expr\Comparison|Expr\Composite|Expr\Func|string
      * @throws VisitorException
      */
     protected function walkNodes(AbstractQueryNode $node)
@@ -197,10 +197,10 @@ class ORMVisitor
     /**
      * @param AbstractScalarOperatorNode $node
      *
-     * @return mixed
+     * @return Expr\Comparison
      * @throws VisitorException
      */
-    protected function visitScalar(AbstractScalarOperatorNode $node)
+    protected function visitScalar(AbstractScalarOperatorNode $node): Expr\Comparison
     {
         if (!$method = ArrayHelper::get($this->scalarMap, get_class($node))) {
             throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
@@ -223,10 +223,10 @@ class ORMVisitor
     /**
      * @param AbstractArrayOperatorNode $node
      *
-     * @return mixed
+     * @return Expr\Func
      * @throws VisitorException
      */
-    protected function visitArray(AbstractArrayOperatorNode $node)
+    protected function visitArray(AbstractArrayOperatorNode $node): Expr\Func
     {
         if (!$method = ArrayHelper::get($this->arrayMap, get_class($node))) {
             throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
@@ -241,7 +241,7 @@ class ORMVisitor
     /**
      * @param AbstractLogicalOperatorNode $node
      *
-     * @return Expr\Func
+     * @return Expr\Composite|Expr\Func
      * @throws VisitorException
      */
     protected function visitLogic(AbstractLogicalOperatorNode $node)
@@ -268,19 +268,19 @@ class ORMVisitor
      *
      * @param AbstractNullOperatorNode $node
      *
-     * @return mixed
+     * @return string
      * @throws VisitorException
      */
-    protected function visitNullOperatorNode(AbstractNullOperatorNode $node)
+    protected function visitNullOperatorNode(AbstractNullOperatorNode $node): string
     {
         if (!$method = ArrayHelper::get($this->nullOperatorMap, get_class($node))) {
             throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
 
         $pathToField = $node->getField();
-        $exp = $this->qb->expr()->$method($this->pathToAlias($pathToField));
+        $expr = $this->qb->expr()->$method($this->pathToAlias($pathToField));
 
-        return $exp;
+        return $expr;
     }
 
     /**
@@ -304,11 +304,11 @@ class ORMVisitor
     }
 
     /**
-     * @param $path
+     * @param string $path
      *
      * @return string
      */
-    protected function pathToAlias($path): string
+    protected function pathToAlias(string $path): string
     {
         if ($this->autoRootAlias) {
             $path = $this->autoRootAlias . '.' . $path;

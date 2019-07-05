@@ -11,21 +11,10 @@ use AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\AbstractNu
  */
 class IsNullNode extends AbstractNullOperatorNode
 {
-
-    /**
-     * IsNullNode constructor.
-     *
-     * @param $field
-     */
-    public function __construct($field)
-    {
-        $this->setField($field);
-    }
-
     /**
      * @inheritdoc
      */
-    public function getNodeName()
+    public function getNodeName(): string
     {
         return 'isnull';
     }
