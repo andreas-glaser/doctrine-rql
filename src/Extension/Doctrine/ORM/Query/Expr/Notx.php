@@ -29,7 +29,7 @@ class Notx extends Composite
     /**
      * @return array
      */
-    public function getParts()
+    public function getParts(): array
     {
         return $this->parts;
     }

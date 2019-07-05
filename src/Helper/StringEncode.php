@@ -10,12 +10,12 @@ namespace AndreasGlaser\DoctrineRql\Helper;
 class StringEncode
 {
     /**
-     * @param $string
+     * @param string $string
      *
      * @return string
      * @source https://github.com/xiag-ag/rql-parser#string-encoding-in-php
      */
-    public static function encode($string): string
+    public static function encode(string $string): string
     {
         return strtr(rawurlencode($string), [
             '-' => '%2D',

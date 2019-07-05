@@ -15,17 +15,17 @@ abstract class AbstractNullOperatorNode extends AbstractComparisonOperatorNode
     /**
      * AbstractNullOperatorNode constructor.
      *
-     * @param $field
+     * @param string $field
      */
-    public function __construct($field)
+    public function __construct(string $field)
     {
         $this->setField($field);
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function toRql()
+    public function toRql(): string
     {
         return sprintf(
             '%s(%s)',

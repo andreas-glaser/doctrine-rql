@@ -14,9 +14,9 @@ use Doctrine\Common\Persistence\ObjectManager;
 class ORM implements FixtureInterface
 {
     /**
-     * @param \Doctrine\Common\Persistence\ObjectManager $manager
+     * @inheritDoc
      */
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         for ($i = 1; $i <= 10; $i++) {
 
