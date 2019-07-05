@@ -1,13 +1,13 @@
 <?php
 
-namespace AndreasGlaser\DoctrineRql\Extension\Xiag\Rql\Parser\Node\Query\NullOperator;
+namespace AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator;
 
-use AndreasGlaser\DoctrineRql\Extension\Xiag\Rql\Parser\Node\Query\AbstractNullOperatorNode;
+use AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\AbstractNullOperatorNode;
 
 /**
  * Class IsNullNode
  *
- * @package AndreasGlaser\DoctrineRql\Extension\Xiag\Rql\Parser\Node\Query\NullOperator
+ * @package AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator
  * @author  Andreas Glaser
  */
 class IsNullNode extends AbstractNullOperatorNode

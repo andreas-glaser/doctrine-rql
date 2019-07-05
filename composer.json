@@ -20,19 +20,20 @@
     }
   ],
   "require": {
-    "php": "^5.6||^7",
-    "xiag/rql-parser": "^2",
+    "php": "^7.2",
+    "andreas-glaser/php-helpers": "^1",
     "doctrine/orm": "^2.4.8",
-    "andreas-glaser/php-helpers": "^1"
+    "graviton/rql-parser": "^3"
   },
   "require-dev": {
+    "doctrine/data-fixtures": "@stable",
     "phpunit/phpunit": "^7",
-    "symfony/var-dumper": "@stable",
-    "doctrine/data-fixtures": "@stable"
+    "symfony/var-dumper": "@stable"
   },
   "suggest": {},
   "config": {
-    "bin-dir": "bin"
+    "bin-dir": "bin",
+    "sort-packages": true
   },
   "autoload": {
     "psr-4": {
