@@ -31,38 +31,38 @@ class ORMVisitor
      * @var array
      */
     protected $scalarMap = [
-        'Graviton\RqlParser\Node\Query\ScalarOperator\EqNode' => 'eq',
-        'Graviton\RqlParser\Node\Query\ScalarOperator\NeNode' => 'neq',
-        'Graviton\RqlParser\Node\Query\ScalarOperator\LtNode' => 'lt',
-        'Graviton\RqlParser\Node\Query\ScalarOperator\GtNode' => 'gt',
-        'Graviton\RqlParser\Node\Query\ScalarOperator\LeNode' => 'lte',
-        'Graviton\RqlParser\Node\Query\ScalarOperator\GeNode' => 'gte',
-        'Graviton\RqlParser\Node\Query\ScalarOperator\LikeNode' => 'like',
+        \Graviton\RqlParser\Node\Query\ScalarOperator\EqNode::class => 'eq',
+        \Graviton\RqlParser\Node\Query\ScalarOperator\NeNode::class => 'neq',
+        \Graviton\RqlParser\Node\Query\ScalarOperator\LtNode::class => 'lt',
+        \Graviton\RqlParser\Node\Query\ScalarOperator\GtNode::class => 'gt',
+        \Graviton\RqlParser\Node\Query\ScalarOperator\LeNode::class => 'lte',
+        \Graviton\RqlParser\Node\Query\ScalarOperator\GeNode::class => 'gte',
+        \Graviton\RqlParser\Node\Query\ScalarOperator\LikeNode::class => 'like',
     ];
 
     /**
      * @var array
      */
     protected $nullOperatorMap = [
-        'AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator\IsNullNode' => 'isNull',
-        'AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator\IsNotNullNode' => 'isNotNull',
+        \AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator\IsNullNode::class => 'isNull',
+        \AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator\IsNotNullNode::class => 'isNotNull',
     ];
 
     /**
      * @var array
      */
     protected $arrayMap = [
-        'Graviton\RqlParser\Node\Query\ArrayOperator\InNode' => 'in',
-        'Graviton\RqlParser\Node\Query\ArrayOperator\OutNode' => 'notIn',
+        \Graviton\RqlParser\Node\Query\ArrayOperator\InNode::class => 'in',
+        \Graviton\RqlParser\Node\Query\ArrayOperator\OutNode::class => 'notIn',
     ];
 
     /**
      * @var array
      */
     protected $logicMap = [
-        'Graviton\RqlParser\Node\Query\LogicalOperator\AndNode' => '\Doctrine\ORM\Query\Expr\Andx',
-        'Graviton\RqlParser\Node\Query\LogicalOperator\OrNode' => '\Doctrine\ORM\Query\Expr\Orx',
-        'Graviton\RqlParser\Node\Query\LogicalOperator\NotNode' => '\AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\Notx',
+        \Graviton\RqlParser\Node\Query\LogicalOperator\AndNode::class => '\Doctrine\ORM\Query\Expr\Andx',
+        \Graviton\RqlParser\Node\Query\LogicalOperator\OrNode::class => '\Doctrine\ORM\Query\Expr\Orx',
+        \Graviton\RqlParser\Node\Query\LogicalOperator\NotNode::class => '\AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\Notx',
     ];
 
     /**
@@ -105,12 +105,16 @@ class ORMVisitor
 
     /**
      * Resets values for object re-use.
+     *
+     * @return ORMVisitor
      */
-    public function reset(): void
+    public function reset(): self
     {
         $this->qb = null;
         $this->autoRootAlias = null;
         $this->aliasMap = [];
+
+        return $this;
     }
 
     protected function buildPathToAliasMap(): void
