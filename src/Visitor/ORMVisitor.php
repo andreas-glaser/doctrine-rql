@@ -60,9 +60,9 @@ class ORMVisitor
      * @var array
      */
     protected $logicMap = [
-        \Graviton\RqlParser\Node\Query\LogicalOperator\AndNode::class => '\Doctrine\ORM\Query\Expr\Andx',
-        \Graviton\RqlParser\Node\Query\LogicalOperator\OrNode::class => '\Doctrine\ORM\Query\Expr\Orx',
-        \Graviton\RqlParser\Node\Query\LogicalOperator\NotNode::class => '\AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\Notx',
+        \Graviton\RqlParser\Node\Query\LogicalOperator\AndNode::class => \Doctrine\ORM\Query\Expr\Andx::class,
+        \Graviton\RqlParser\Node\Query\LogicalOperator\OrNode::class => \Doctrine\ORM\Query\Expr\Orx::class,
+        \Graviton\RqlParser\Node\Query\LogicalOperator\NotNode::class => \AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\Notx::class,
     ];
 
     /**
