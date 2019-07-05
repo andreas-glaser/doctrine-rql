@@ -12,33 +12,13 @@ use Graviton\RqlParser\NodeParser\Query\LogicalOperator as GravitonLogicalOperat
  * Class RQLParser
  *
  * @package AndreasGlaser\DoctrineRql\Helper
- * @author  Andreas Glaser
- * @author  Dominic Tubach <dominic.tubach@to.com>
  */
 class RQLParser
 {
     /**
-     * Creates SELECT/WHERE/SORT/LIMIT parser.
-     *
-     * @return \Graviton\RqlParser\Parser
-     * @author Andreas Glaser
-     * @author Dominic Tubach <dominic.tubach@to.com>
-     * @deprecated Use RQLParser::createFiltersOnly() as SELECT is unsupported in 0.1/0.2
+     * @return Graviton\Parser
      */
-    public static function createAll()
-    {
-        return new Graviton\Parser(Graviton\Parser::createDefaultNodeParser());
-    }
-
-    /**
-     * Creates WHERE/SORT/LIMIT parser.
-     *
-     * @return \Graviton\RqlParser\Parser
-     * @author Andreas Glaser
-     * @author Dominic Tubach <dominic.tubach@to.com>
-     * @todo   : Rename
-     */
-    public static function createFiltersOnly()
+    public static function createFiltersOnly(): \Graviton\RqlParser\Parser
     {
         $scalarParser = new Graviton\ValueParser\ScalarParser();
         $scalarParser
@@ -99,30 +79,15 @@ class RQLParser
      * Parses given RQL string into an abstract syntax tree (AST).
      *
      * @param \Graviton\RqlParser\Parser $parser
-     * @param  string                 $rql
+     * @param string                     $rql
      *
      * @return \Graviton\RqlParser\Query
-     * @author Andreas Glaser
      */
-    public static function parse(Graviton\Parser $parser, $rql)
+    public static function parse(Graviton\Parser $parser, $rql): \Graviton\RqlParser\Query
     {
         $lexer = new Lexer();
 
         return $parser->parse($lexer->tokenize($rql));
-    }
-
-    /**
-     * Shot cut
-     *
-     * @param string $rql
-     *
-     * @return \Graviton\RqlParser\Query
-     * @author Andreas Glaser
-     * @deprecated Use RQLParser::parseFiltersOnly() as SELECT is unsupported in 0.1/0.2
-     */
-    public static function parseAll($rql)
-    {
-        return static::parse(self::createAll(), $rql);
     }
 
     /**
@@ -131,9 +96,8 @@ class RQLParser
      * @param $rql
      *
      * @return \Graviton\RqlParser\Query
-     * @author Andreas Glaser
      */
-    public static function parseFiltersOnly($rql)
+    public static function parseFiltersOnly($rql): \Graviton\RqlParser\Query
     {
         return static::parse(self::createFiltersOnly(), $rql);
     }

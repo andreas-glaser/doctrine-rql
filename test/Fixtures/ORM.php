@@ -10,14 +10,11 @@ use Doctrine\Common\Persistence\ObjectManager;
  * Class ORM
  *
  * @package AndreasGlaser\DoctrineRql\Fixtures
- * @author  Andreas Glaser
  */
 class ORM implements FixtureInterface
 {
     /**
      * @param \Doctrine\Common\Persistence\ObjectManager $manager
-     *
-     * @author Andreas Glaser
      */
     public function load(ObjectManager $manager)
     {

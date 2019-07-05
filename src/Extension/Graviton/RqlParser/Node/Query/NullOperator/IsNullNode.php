@@ -8,7 +8,6 @@ use AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\AbstractNu
  * Class IsNullNode
  *
  * @package AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator
- * @author  Andreas Glaser
  */
 class IsNullNode extends AbstractNullOperatorNode
 {
@@ -17,8 +16,6 @@ class IsNullNode extends AbstractNullOperatorNode
      * IsNullNode constructor.
      *
      * @param $field
-     *
-     * @author Andreas Glaser
      */
     public function __construct($field)
     {

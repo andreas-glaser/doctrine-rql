@@ -19,8 +19,6 @@ use Graviton\RqlParser\Query as RqlQuery;
  * Class ORMVisitor
  *
  * @package AndreasGlaser\DoctrineRql\Visitor
- * @author  Andreas Glaser
- * @author  Dominic Tubach <dominic.tubach@to.com>
  */
 class ORMVisitor
 {
@@ -33,12 +31,12 @@ class ORMVisitor
      * @var array
      */
     protected $scalarMap = [
-        'Graviton\RqlParser\Node\Query\ScalarOperator\EqNode'   => 'eq',
-        'Graviton\RqlParser\Node\Query\ScalarOperator\NeNode'   => 'neq',
-        'Graviton\RqlParser\Node\Query\ScalarOperator\LtNode'   => 'lt',
-        'Graviton\RqlParser\Node\Query\ScalarOperator\GtNode'   => 'gt',
-        'Graviton\RqlParser\Node\Query\ScalarOperator\LeNode'   => 'lte',
-        'Graviton\RqlParser\Node\Query\ScalarOperator\GeNode'   => 'gte',
+        'Graviton\RqlParser\Node\Query\ScalarOperator\EqNode' => 'eq',
+        'Graviton\RqlParser\Node\Query\ScalarOperator\NeNode' => 'neq',
+        'Graviton\RqlParser\Node\Query\ScalarOperator\LtNode' => 'lt',
+        'Graviton\RqlParser\Node\Query\ScalarOperator\GtNode' => 'gt',
+        'Graviton\RqlParser\Node\Query\ScalarOperator\LeNode' => 'lte',
+        'Graviton\RqlParser\Node\Query\ScalarOperator\GeNode' => 'gte',
         'Graviton\RqlParser\Node\Query\ScalarOperator\LikeNode' => 'like',
     ];
 
@@ -46,7 +44,7 @@ class ORMVisitor
      * @var array
      */
     protected $nullOperatorMap = [
-        'AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator\IsNullNode'    => 'isNull',
+        'AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator\IsNullNode' => 'isNull',
         'AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator\IsNotNullNode' => 'isNotNull',
     ];
 
@@ -54,7 +52,7 @@ class ORMVisitor
      * @var array
      */
     protected $arrayMap = [
-        'Graviton\RqlParser\Node\Query\ArrayOperator\InNode'  => 'in',
+        'Graviton\RqlParser\Node\Query\ArrayOperator\InNode' => 'in',
         'Graviton\RqlParser\Node\Query\ArrayOperator\OutNode' => 'notIn',
     ];
 
@@ -63,7 +61,7 @@ class ORMVisitor
      */
     protected $logicMap = [
         'Graviton\RqlParser\Node\Query\LogicalOperator\AndNode' => '\Doctrine\ORM\Query\Expr\Andx',
-        'Graviton\RqlParser\Node\Query\LogicalOperator\OrNode'  => '\Doctrine\ORM\Query\Expr\Orx',
+        'Graviton\RqlParser\Node\Query\LogicalOperator\OrNode' => '\Doctrine\ORM\Query\Expr\Orx',
         'Graviton\RqlParser\Node\Query\LogicalOperator\NotNode' => '\AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\Notx',
     ];
 
@@ -83,13 +81,13 @@ class ORMVisitor
     protected $aliasMap = [];
 
     /**
-     * @param \Doctrine\ORM\QueryBuilder $qb
-     * @param \Graviton\RqlParser\Query     $query
-     * @param bool                       $autoRootAlias
+     * @param QueryBuilder $qb
+     * @param RqlQuery     $query
+     * @param bool         $autoRootAlias
      *
-     * @author Andreas Glaser
+     * @throws VisitorException
      */
-    public function append(QueryBuilder $qb, RqlQuery $query, $autoRootAlias = true)
+    public function append(QueryBuilder $qb, RqlQuery $query, $autoRootAlias = true): void
     {
         $this->reset();
 
@@ -107,20 +105,15 @@ class ORMVisitor
 
     /**
      * Resets values for object re-use.
-     *
-     * @author Andreas Glaser
      */
-    public function reset()
+    public function reset(): void
     {
         $this->qb = null;
         $this->autoRootAlias = null;
         $this->aliasMap = [];
     }
 
-    /**
-     * @author Andreas Glaser
-     */
-    protected function buildPathToAliasMap()
+    protected function buildPathToAliasMap(): void
     {
         $rootAlias = ArrayHelper::getFirstValue($this->qb->getRootAliases());
         $this->aliasMap[$rootAlias] = $rootAlias;
@@ -142,10 +135,8 @@ class ORMVisitor
 
     /**
      * @return ExpressionBuilder
-     *
-     * @author Dominic Tubach <dominic.tubach@to.com>
      */
-    protected function getExpressionBuilder()
+    protected function getExpressionBuilder(): ExpressionBuilder
     {
         if (null === $this->expressionBuilder) {
             $this->expressionBuilder = new ExpressionBuilder();
@@ -155,11 +146,10 @@ class ORMVisitor
     }
 
     /**
-     * @param \Graviton\RqlParser\Node\AbstractQueryNode $node
+     * @param AbstractQueryNode $node
      *
      * @return mixed
-     * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
-     * @author Andreas Glaser
+     * @throws VisitorException
      */
     protected function walkNodes(AbstractQueryNode $node)
     {
@@ -177,12 +167,11 @@ class ORMVisitor
     }
 
     /**
-     * @param \Graviton\RqlParser\Query $query
+     * @param RqlQuery $query
      *
-     * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
-     * @author Andreas Glaser
+     * @throws VisitorException
      */
-    protected function visitQuery(RqlQuery $query)
+    protected function visitQuery(RqlQuery $query): void
     {
         if ($selectNode = $query->getSelect()) {
             // todo: Implement this
@@ -202,12 +191,10 @@ class ORMVisitor
     }
 
     /**
-     * @param \Graviton\RqlParser\Node\Query\AbstractScalarOperatorNode $node
+     * @param AbstractScalarOperatorNode $node
      *
      * @return mixed
-     * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
-     * @author Andreas Glaser
-     * @author Dominic Tubach <dominic.tubach@to.com>
+     * @throws VisitorException
      */
     protected function visitScalar(AbstractScalarOperatorNode $node)
     {
@@ -230,11 +217,10 @@ class ORMVisitor
     }
 
     /**
-     * @param \Graviton\RqlParser\Node\Query\AbstractArrayOperatorNode $node
+     * @param AbstractArrayOperatorNode $node
      *
      * @return mixed
-     * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
-     * @author Andreas Glaser
+     * @throws VisitorException
      */
     protected function visitArray(AbstractArrayOperatorNode $node)
     {
@@ -249,11 +235,10 @@ class ORMVisitor
     }
 
     /**
-     * @param \Graviton\RqlParser\Node\Query\AbstractLogicalOperatorNode $node
+     * @param AbstractLogicalOperatorNode $node
      *
-     * @return mixed
-     * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
-     * @author Andreas Glaser
+     * @return Expr\Func
+     * @throws VisitorException
      */
     protected function visitLogic(AbstractLogicalOperatorNode $node)
     {
@@ -277,11 +262,10 @@ class ORMVisitor
     /**
      * Apply $queryBuilder->expr()->isNull(fieldName) / $queryBuilder->expr()->isNotNull()
      *
-     * @param \AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\AbstractNullOperatorNode $node
+     * @param AbstractNullOperatorNode $node
      *
      * @return mixed
-     * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
-     * @author Andreas Glaser
+     * @throws VisitorException
      */
     protected function visitNullOperatorNode(AbstractNullOperatorNode $node)
     {
@@ -296,11 +280,9 @@ class ORMVisitor
     }
 
     /**
-     * @param \Graviton\RqlParser\Node\SortNode $node
-     *
-     * @author Andreas Glaser
+     * @param Node\SortNode $node
      */
-    protected function visitSort(Node\SortNode $node)
+    protected function visitSort(Node\SortNode $node): void
     {
         foreach ($node->getFields() as $field => $order) {
             $this->qb->orderBy($this->pathToAlias($field), $order === 1 ? 'ASC' : 'DESC');
@@ -308,11 +290,9 @@ class ORMVisitor
     }
 
     /**
-     * @param \Graviton\RqlParser\Node\LimitNode $node
-     *
-     * @author Andreas Glaser
+     * @param Node\LimitNode $node
      */
-    protected function visitLimit(Node\LimitNode $node)
+    protected function visitLimit(Node\LimitNode $node): void
     {
         $this->qb
             ->setMaxResults($node->getLimit())
@@ -322,10 +302,9 @@ class ORMVisitor
     /**
      * @param $path
      *
-     * @return null
-     * @author Andreas Glaser
+     * @return string
      */
-    protected function pathToAlias($path)
+    protected function pathToAlias($path): string
     {
         if ($this->autoRootAlias) {
             $path = $this->autoRootAlias . '.' . $path;

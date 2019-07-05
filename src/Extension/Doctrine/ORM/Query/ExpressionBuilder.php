@@ -1,4 +1,5 @@
 <?php
+
 namespace AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query;
 
 use Doctrine\ORM\Query\Expr;
@@ -7,7 +8,6 @@ use Doctrine\ORM\Query\Expr;
  * This class is used to generate DQL expressions.
  *
  * @package AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query
- * @author  Dominic Tubach <dominic.tubach@to.com>
  */
 class ExpressionBuilder extends Expr
 {
@@ -16,7 +16,6 @@ class ExpressionBuilder extends Expr
      * @param mixed  $y
      *
      * @return \Doctrine\ORM\Query\Expr\Comparison
-     * @author  Dominic Tubach <dominic.tubach@to.com>
      */
     public function like($x, $y)
     {
@@ -28,7 +27,6 @@ class ExpressionBuilder extends Expr
      * @param mixed  $y
      *
      * @return \Doctrine\ORM\Query\Expr\Comparison
-     * @author  Dominic Tubach <dominic.tubach@to.com>
      */
     public function notLike($x, $y)
     {

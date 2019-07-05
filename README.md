@@ -3,7 +3,7 @@ Parses and applies RQL/FIQL scripts to doctrine orm query builders.
 
 ## Installation
 ```shell
-composer require andreas-glaser/doctrine-rql 0.2.*
+composer require andreas-glaser/doctrine-rql 0.3.*
 ```
 
 ## Usage Test

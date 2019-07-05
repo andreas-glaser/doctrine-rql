@@ -2,7 +2,7 @@
 
 cd "$(dirname "$(readlink -f "$0")")"
 
-[ ! -d "./bin" ] || [ ! -d "./vendor" ]; {
+[[ ! -d "./bin" ]] || [[ ! -d "./vendor" ]]; {
   composer install
 }
 

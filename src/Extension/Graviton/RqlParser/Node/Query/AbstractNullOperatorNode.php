@@ -9,7 +9,6 @@ use Graviton\RqlParser\RqlEncoder;
  * Class AbstractNullOperatorNode
  *
  * @package AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query
- * @author  Andreas Glaser
  */
 abstract class AbstractNullOperatorNode extends AbstractComparisonOperatorNode
 {
@@ -17,8 +16,6 @@ abstract class AbstractNullOperatorNode extends AbstractComparisonOperatorNode
      * AbstractNullOperatorNode constructor.
      *
      * @param $field
-     *
-     * @author Andreas Glaser
      */
     public function __construct($field)
     {

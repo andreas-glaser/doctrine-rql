@@ -15,7 +15,6 @@ use PHPUnit\Framework\TestCase;
  * Class ORMVisitor
  *
  * @package AndreasGlaser\DoctrineRql
- * @author  Andreas Glaser
  */
 class ORMTest extends TestCase
 {
@@ -25,12 +24,11 @@ class ORMTest extends TestCase
     protected $em;
 
     /**
+     * @throws ORM\ORMException
+     * @throws ORM\Tools\ToolsException
      * @throws \Doctrine\DBAL\DBALException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\Tools\ToolsException
-     * @author Andreas Glaser
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $conn = DriverManager::getConnection([
             'driver' => 'pdo_sqlite',
@@ -51,10 +49,7 @@ class ORMTest extends TestCase
         $executor->execute($loader->getFixtures());
     }
 
-    /**
-     * @author Andreas Glaser
-     */
-    public function test()
+    public function test(): void
     {
         $qb = $this->em->createQueryBuilder();
 
@@ -83,10 +78,8 @@ class ORMTest extends TestCase
         $this->assertEquals('SELECT c0_.id AS id_0, c0_.deleted_at AS deleted_at_1, p1_.id AS id_2, p1_.name AS name_3, p1_.published_at AS published_at_4, p1_.deleted_at AS deleted_at_5, p2_.id AS id_6, p3_.id AS id_7, p3_.name AS name_8, p2_.product_id AS product_id_9, p2_.photo_id AS photo_id_10 FROM Cart c0_ LEFT JOIN cart_products c4_ ON c0_.id = c4_.cart_id LEFT JOIN Product p1_ ON p1_.id = c4_.product_id LEFT JOIN ProductPhoto p2_ ON p1_.id = p2_.product_id LEFT JOIN Photo p3_ ON p2_.photo_id = p3_.id WHERE (c0_.id = ? OR c0_.id < ? OR (c0_.id <> ? AND c0_.id >= ? AND c0_.id = ?)) AND c0_.id <> ? AND (NOT (c0_.id = ? OR c0_.id = ?)) AND c0_.id = ? AND (c0_.id = ? OR c0_.id < ? OR c0_.id IN (2, 3)) ORDER BY c0_.id DESC LIMIT 1 OFFSET 2', $qbTest2->getQuery()->getSQL());
     }
 
-    /**
-     * @author  Dominic Tubach <dominic.tubach@to.com>
-     */
-    public function testLike01()
+
+    public function testLike01(): void
     {
         $qb = $this->em->createQueryBuilder();
         $qb
@@ -108,10 +101,8 @@ class ORMTest extends TestCase
         $this->assertCount(9, $qbTest->getQuery()->getResult());
     }
 
-    /**
-     * @author  Dominic Tubach <dominic.tubach@to.com>
-     */
-    public function testLike02()
+
+    public function testLike02(): void
     {
         $qb = $this->em->createQueryBuilder();
         $qb
@@ -133,10 +124,8 @@ class ORMTest extends TestCase
         $this->assertCount(0, $qbTest->getQuery()->getResult());
     }
 
-    /**
-     * @author Andreas Glaser
-     */
-    public function testIsNullNode()
+
+    public function testIsNullNode(): void
     {
         $qb = $this->em->createQueryBuilder();
 
@@ -158,10 +147,8 @@ class ORMTest extends TestCase
         $this->assertEquals(0, $query->getParameters()->count());
     }
 
-    /**
-     * @author Andreas Glaser
-     */
-    public function testIsNotNullNode()
+
+    public function testIsNotNullNode(): void
     {
         $qb = $this->em->createQueryBuilder();
 
@@ -183,10 +170,8 @@ class ORMTest extends TestCase
         $this->assertEquals(0, $query->getParameters()->count());
     }
 
-    /**
-     * @author Andreas Glaser
-     */
-    public function testIsNullNodeComplex()
+
+    public function testIsNullNodeComplex(): void
     {
         $qb = $this->em->createQueryBuilder();
 

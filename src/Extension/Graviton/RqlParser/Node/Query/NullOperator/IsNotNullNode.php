@@ -8,7 +8,6 @@ use AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\AbstractNu
  * Class IsNotNullNode
  *
  * @package AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator
- * @author  Andreas Glaser
  */
 class IsNotNullNode extends AbstractNullOperatorNode
 {

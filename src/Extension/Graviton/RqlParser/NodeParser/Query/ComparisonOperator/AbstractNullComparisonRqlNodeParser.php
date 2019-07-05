@@ -12,7 +12,6 @@ use Graviton\RqlParser\TokenStream;
  * Class AbstractNullComparisonRqlNodeParser
  *
  * @package AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\NodeParser\Query\ComparisonOperator
- * @author  Andreas Glaser
  */
 abstract class AbstractNullComparisonRqlNodeParser implements NodeParserInterface
 {
@@ -33,13 +32,11 @@ abstract class AbstractNullComparisonRqlNodeParser implements NodeParserInterfac
      * @param $field
      *
      * @return AbstractNullOperatorNode
-     * @author Andreas Glaser
      */
     abstract protected function createNode($field);
 
     /**
      * @return string
-     * @author Andreas Glaser
      */
     abstract protected function getOperatorName();
 
@@ -47,7 +44,6 @@ abstract class AbstractNullComparisonRqlNodeParser implements NodeParserInterfac
      * @param \Graviton\RqlParser\TokenStream $tokenStream
      *
      * @return \AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\AbstractNullOperatorNode
-     * @author Andreas Glaser
      */
     public function parse(TokenStream $tokenStream)
     {
@@ -63,7 +59,6 @@ abstract class AbstractNullComparisonRqlNodeParser implements NodeParserInterfac
      * @param \Graviton\RqlParser\TokenStream $tokenStream
      *
      * @return bool
-     * @author Andreas Glaser
      */
     public function supports(TokenStream $tokenStream)
     {

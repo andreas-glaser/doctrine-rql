@@ -9,7 +9,6 @@ use AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\NodeParser\Query\Comp
  * Class IsNullNodeParser
  *
  * @package AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\NodeParser\Query\ComparisonOperator\Rql
- * @author  Andreas Glaser
  */
 class IsNullNodeParser extends AbstractNullComparisonRqlNodeParser
 {
@@ -25,7 +24,6 @@ class IsNullNodeParser extends AbstractNullComparisonRqlNodeParser
      * @param $field
      *
      * @return \AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator\IsNullNode
-     * @author Andreas Glaser
      */
     protected function createNode($field)
     {

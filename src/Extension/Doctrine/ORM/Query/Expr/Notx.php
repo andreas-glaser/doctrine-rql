@@ -8,7 +8,6 @@ use Doctrine\ORM\Query\Expr\Composite;
  * Class Notx
  *
  * @package AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr
- * @author  Andreas Glaser
  */
 class Notx extends Composite
 {

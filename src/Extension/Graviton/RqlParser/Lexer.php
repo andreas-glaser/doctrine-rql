@@ -2,13 +2,10 @@
 
 namespace AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser;
 
-use Graviton\RqlParser\SubLexer as GravitonSubLexer;
-
 /**
  * Class Lexer
  *
  * @package AndreasGlaser\DoctrineRql
- * @author  Andreas Glaser
  */
 class Lexer extends \Graviton\RqlParser\Lexer
 {
@@ -18,7 +15,6 @@ class Lexer extends \Graviton\RqlParser\Lexer
      * @param string $code
      *
      * @return \Graviton\RqlParser\TokenStream
-     * @author Andreas Glaser
      */
     public function tokenize($code)
     {
