@@ -10,7 +10,7 @@ composer require andreas-glaser/doctrine-rql 0.3.*
 ```php
 <?php
 
-namespace TestApp;
+require 'vendor/autoload.php';
 
 use AndreasGlaser\DoctrineRql\Factory\ORMVisitorFactory;
 
@@ -34,7 +34,7 @@ $cartEntities = $qb
 
 A full list of available RQL/FIQL operators can be found at:
 
-[https://github.com/xiag-ag/rql-parser/#operators](https://github.com/xiag-ag/rql-parser/#operators)
+[https://github.com/libgraviton/rql-parser/#operators](https://github.com/libgraviton/rql-parser/#operators)
 
 ### Additional Operators ###
 
