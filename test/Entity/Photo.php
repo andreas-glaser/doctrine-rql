@@ -8,8 +8,6 @@ use Doctrine\ORM\Mapping as ORM;
  * Class Photo
  *
  * @package AndreasGlaser\DoctrineRql\Entity
- * @author  Andreas Glaser
- *
  * @ORM\Entity()
  * @ORM\Table()
  */

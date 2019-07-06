@@ -8,7 +8,6 @@ use Doctrine\ORM\Query\Expr\Composite;
  * Class Notx
  *
  * @package AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr
- * @author  Andreas Glaser
  */
 class Notx extends Composite
 {
@@ -30,7 +29,7 @@ class Notx extends Composite
     /**
      * @return array
      */
-    public function getParts()
+    public function getParts(): array
     {
         return $this->parts;
     }

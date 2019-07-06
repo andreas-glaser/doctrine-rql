@@ -3,24 +3,22 @@
 namespace AndreasGlaser\DoctrineRql\Visitor;
 
 use AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\ExpressionBuilder;
-use AndreasGlaser\DoctrineRql\Extension\Xiag\Rql\Parser\Node\Query\AbstractNullOperatorNode;
+use AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\AbstractNullOperatorNode;
 use AndreasGlaser\Helpers\ArrayHelper;
 use Doctrine\ORM\Query\Expr;
 use Doctrine\ORM\QueryBuilder;
-use Xiag\Rql\Parser\Glob;
-use Xiag\Rql\Parser\Node;
-use Xiag\Rql\Parser\Node\AbstractQueryNode;
-use Xiag\Rql\Parser\Node\Query\AbstractArrayOperatorNode;
-use Xiag\Rql\Parser\Node\Query\AbstractLogicalOperatorNode;
-use Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode;
-use Xiag\Rql\Parser\Query as RqlQuery;
+use Graviton\RqlParser\Glob;
+use Graviton\RqlParser\Node;
+use Graviton\RqlParser\Node\AbstractQueryNode;
+use Graviton\RqlParser\Node\Query\AbstractArrayOperatorNode;
+use Graviton\RqlParser\Node\Query\AbstractLogicalOperatorNode;
+use Graviton\RqlParser\Node\Query\AbstractScalarOperatorNode;
+use Graviton\RqlParser\Query as RqlQuery;
 
 /**
  * Class ORMVisitor
  *
  * @package AndreasGlaser\DoctrineRql\Visitor
- * @author  Andreas Glaser
- * @author  Dominic Tubach <dominic.tubach@to.com>
  */
 class ORMVisitor
 {
@@ -33,38 +31,38 @@ class ORMVisitor
      * @var array
      */
     protected $scalarMap = [
-        'Xiag\Rql\Parser\Node\Query\ScalarOperator\EqNode'   => 'eq',
-        'Xiag\Rql\Parser\Node\Query\ScalarOperator\NeNode'   => 'neq',
-        'Xiag\Rql\Parser\Node\Query\ScalarOperator\LtNode'   => 'lt',
-        'Xiag\Rql\Parser\Node\Query\ScalarOperator\GtNode'   => 'gt',
-        'Xiag\Rql\Parser\Node\Query\ScalarOperator\LeNode'   => 'lte',
-        'Xiag\Rql\Parser\Node\Query\ScalarOperator\GeNode'   => 'gte',
-        'Xiag\Rql\Parser\Node\Query\ScalarOperator\LikeNode' => 'like',
+        \Graviton\RqlParser\Node\Query\ScalarOperator\EqNode::class => 'eq',
+        \Graviton\RqlParser\Node\Query\ScalarOperator\NeNode::class => 'neq',
+        \Graviton\RqlParser\Node\Query\ScalarOperator\LtNode::class => 'lt',
+        \Graviton\RqlParser\Node\Query\ScalarOperator\GtNode::class => 'gt',
+        \Graviton\RqlParser\Node\Query\ScalarOperator\LeNode::class => 'lte',
+        \Graviton\RqlParser\Node\Query\ScalarOperator\GeNode::class => 'gte',
+        \Graviton\RqlParser\Node\Query\ScalarOperator\LikeNode::class => 'like',
     ];
 
     /**
      * @var array
      */
     protected $nullOperatorMap = [
-        'AndreasGlaser\DoctrineRql\Extension\Xiag\Rql\Parser\Node\Query\NullOperator\IsNullNode'    => 'isNull',
-        'AndreasGlaser\DoctrineRql\Extension\Xiag\Rql\Parser\Node\Query\NullOperator\IsNotNullNode' => 'isNotNull',
+        \AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator\IsNullNode::class => 'isNull',
+        \AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator\IsNotNullNode::class => 'isNotNull',
     ];
 
     /**
      * @var array
      */
     protected $arrayMap = [
-        'Xiag\Rql\Parser\Node\Query\ArrayOperator\InNode'  => 'in',
-        'Xiag\Rql\Parser\Node\Query\ArrayOperator\OutNode' => 'notIn',
+        \Graviton\RqlParser\Node\Query\ArrayOperator\InNode::class => 'in',
+        \Graviton\RqlParser\Node\Query\ArrayOperator\OutNode::class => 'notIn',
     ];
 
     /**
      * @var array
      */
     protected $logicMap = [
-        'Xiag\Rql\Parser\Node\Query\LogicalOperator\AndNode' => '\Doctrine\ORM\Query\Expr\Andx',
-        'Xiag\Rql\Parser\Node\Query\LogicalOperator\OrNode'  => '\Doctrine\ORM\Query\Expr\Orx',
-        'Xiag\Rql\Parser\Node\Query\LogicalOperator\NotNode' => '\AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\Notx',
+        \Graviton\RqlParser\Node\Query\LogicalOperator\AndNode::class => \Doctrine\ORM\Query\Expr\Andx::class,
+        \Graviton\RqlParser\Node\Query\LogicalOperator\OrNode::class => \Doctrine\ORM\Query\Expr\Orx::class,
+        \Graviton\RqlParser\Node\Query\LogicalOperator\NotNode::class => \AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\Notx::class,
     ];
 
     /**
@@ -73,7 +71,7 @@ class ORMVisitor
     protected $qb;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $autoRootAlias;
 
@@ -83,13 +81,13 @@ class ORMVisitor
     protected $aliasMap = [];
 
     /**
-     * @param \Doctrine\ORM\QueryBuilder $qb
-     * @param \Xiag\Rql\Parser\Query     $query
-     * @param bool                       $autoRootAlias
+     * @param QueryBuilder $qb
+     * @param RqlQuery     $query
+     * @param bool         $autoRootAlias
      *
-     * @author Andreas Glaser
+     * @throws VisitorException
      */
-    public function append(QueryBuilder $qb, RqlQuery $query, $autoRootAlias = true)
+    public function append(QueryBuilder $qb, RqlQuery $query, bool $autoRootAlias = true): void
     {
         $this->reset();
 
@@ -108,19 +106,18 @@ class ORMVisitor
     /**
      * Resets values for object re-use.
      *
-     * @author Andreas Glaser
+     * @return ORMVisitor
      */
-    public function reset()
+    public function reset(): self
     {
         $this->qb = null;
         $this->autoRootAlias = null;
         $this->aliasMap = [];
+
+        return $this;
     }
 
-    /**
-     * @author Andreas Glaser
-     */
-    protected function buildPathToAliasMap()
+    protected function buildPathToAliasMap(): void
     {
         $rootAlias = ArrayHelper::getFirstValue($this->qb->getRootAliases());
         $this->aliasMap[$rootAlias] = $rootAlias;
@@ -142,10 +139,8 @@ class ORMVisitor
 
     /**
      * @return ExpressionBuilder
-     *
-     * @author Dominic Tubach <dominic.tubach@to.com>
      */
-    protected function getExpressionBuilder()
+    protected function getExpressionBuilder(): ExpressionBuilder
     {
         if (null === $this->expressionBuilder) {
             $this->expressionBuilder = new ExpressionBuilder();
@@ -155,11 +150,10 @@ class ORMVisitor
     }
 
     /**
-     * @param \Xiag\Rql\Parser\Node\AbstractQueryNode $node
+     * @param AbstractQueryNode $node
      *
-     * @return mixed
-     * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
-     * @author Andreas Glaser
+     * @return Expr\Comparison|Expr\Composite|Expr\Func|string
+     * @throws VisitorException
      */
     protected function walkNodes(AbstractQueryNode $node)
     {
@@ -177,12 +171,11 @@ class ORMVisitor
     }
 
     /**
-     * @param \Xiag\Rql\Parser\Query $query
+     * @param RqlQuery $query
      *
-     * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
-     * @author Andreas Glaser
+     * @throws VisitorException
      */
-    protected function visitQuery(RqlQuery $query)
+    protected function visitQuery(RqlQuery $query): void
     {
         if ($selectNode = $query->getSelect()) {
             // todo: Implement this
@@ -202,14 +195,12 @@ class ORMVisitor
     }
 
     /**
-     * @param \Xiag\Rql\Parser\Node\Query\AbstractScalarOperatorNode $node
+     * @param AbstractScalarOperatorNode $node
      *
-     * @return mixed
-     * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
-     * @author Andreas Glaser
-     * @author Dominic Tubach <dominic.tubach@to.com>
+     * @return Expr\Comparison
+     * @throws VisitorException
      */
-    protected function visitScalar(AbstractScalarOperatorNode $node)
+    protected function visitScalar(AbstractScalarOperatorNode $node): Expr\Comparison
     {
         if (!$method = ArrayHelper::get($this->scalarMap, get_class($node))) {
             throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
@@ -230,13 +221,12 @@ class ORMVisitor
     }
 
     /**
-     * @param \Xiag\Rql\Parser\Node\Query\AbstractArrayOperatorNode $node
+     * @param AbstractArrayOperatorNode $node
      *
-     * @return mixed
-     * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
-     * @author Andreas Glaser
+     * @return Expr\Func
+     * @throws VisitorException
      */
-    protected function visitArray(AbstractArrayOperatorNode $node)
+    protected function visitArray(AbstractArrayOperatorNode $node): Expr\Func
     {
         if (!$method = ArrayHelper::get($this->arrayMap, get_class($node))) {
             throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
@@ -249,11 +239,10 @@ class ORMVisitor
     }
 
     /**
-     * @param \Xiag\Rql\Parser\Node\Query\AbstractLogicalOperatorNode $node
+     * @param AbstractLogicalOperatorNode $node
      *
-     * @return mixed
-     * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
-     * @author Andreas Glaser
+     * @return Expr\Composite|Expr\Func
+     * @throws VisitorException
      */
     protected function visitLogic(AbstractLogicalOperatorNode $node)
     {
@@ -277,30 +266,27 @@ class ORMVisitor
     /**
      * Apply $queryBuilder->expr()->isNull(fieldName) / $queryBuilder->expr()->isNotNull()
      *
-     * @param \AndreasGlaser\DoctrineRql\Extension\Xiag\Rql\Parser\Node\Query\AbstractNullOperatorNode $node
+     * @param AbstractNullOperatorNode $node
      *
-     * @return mixed
-     * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
-     * @author Andreas Glaser
+     * @return string
+     * @throws VisitorException
      */
-    protected function visitNullOperatorNode(AbstractNullOperatorNode $node)
+    protected function visitNullOperatorNode(AbstractNullOperatorNode $node): string
     {
         if (!$method = ArrayHelper::get($this->nullOperatorMap, get_class($node))) {
             throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
 
         $pathToField = $node->getField();
-        $exp = $this->qb->expr()->$method($this->pathToAlias($pathToField));
+        $expr = $this->qb->expr()->$method($this->pathToAlias($pathToField));
 
-        return $exp;
+        return $expr;
     }
 
     /**
-     * @param \Xiag\Rql\Parser\Node\SortNode $node
-     *
-     * @author Andreas Glaser
+     * @param Node\SortNode $node
      */
-    protected function visitSort(Node\SortNode $node)
+    protected function visitSort(Node\SortNode $node): void
     {
         foreach ($node->getFields() as $field => $order) {
             $this->qb->orderBy($this->pathToAlias($field), $order === 1 ? 'ASC' : 'DESC');
@@ -308,11 +294,9 @@ class ORMVisitor
     }
 
     /**
-     * @param \Xiag\Rql\Parser\Node\LimitNode $node
-     *
-     * @author Andreas Glaser
+     * @param Node\LimitNode $node
      */
-    protected function visitLimit(Node\LimitNode $node)
+    protected function visitLimit(Node\LimitNode $node): void
     {
         $this->qb
             ->setMaxResults($node->getLimit())
@@ -320,12 +304,11 @@ class ORMVisitor
     }
 
     /**
-     * @param $path
+     * @param string $path
      *
-     * @return null
-     * @author Andreas Glaser
+     * @return string
      */
-    protected function pathToAlias($path)
+    protected function pathToAlias(string $path): string
     {
         if ($this->autoRootAlias) {
             $path = $this->autoRootAlias . '.' . $path;

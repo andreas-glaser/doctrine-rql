@@ -15,24 +15,25 @@
   "authors": [
     {
       "name": "Andreas Glaser",
-      "email": "andreas.c.glaser@gmail.com",
+      "email": "andreas.glaser@pm.me",
       "homepage": "http://andreas.glaser.me"
     }
   ],
   "require": {
-    "php": "^5.6||^7",
-    "xiag/rql-parser": "^2",
+    "php": "^7.2",
+    "andreas-glaser/php-helpers": "^1.1.9",
     "doctrine/orm": "^2.4.8",
-    "andreas-glaser/php-helpers": "^1"
+    "graviton/rql-parser": "^3"
   },
   "require-dev": {
-    "phpunit/phpunit": "@stable",
-    "symfony/var-dumper": "@stable",
-    "doctrine/data-fixtures": "@stable"
+    "doctrine/data-fixtures": "^1.3.1",
+    "phpunit/phpunit": "^8.2.4",
+    "symfony/var-dumper": "^4.3.2"
   },
   "suggest": {},
   "config": {
-    "bin-dir": "bin"
+    "bin-dir": "bin",
+    "sort-packages": true
   },
   "autoload": {
     "psr-4": {
@@ -46,7 +47,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "0.3-dev"
+      "dev-master": "0.4-dev"
     }
   }
 }

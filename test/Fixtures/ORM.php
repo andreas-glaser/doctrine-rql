@@ -10,16 +10,13 @@ use Doctrine\Common\Persistence\ObjectManager;
  * Class ORM
  *
  * @package AndreasGlaser\DoctrineRql\Fixtures
- * @author  Andreas Glaser
  */
 class ORM implements FixtureInterface
 {
     /**
-     * @param \Doctrine\Common\Persistence\ObjectManager $manager
-     *
-     * @author Andreas Glaser
+     * @inheritDoc
      */
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         for ($i = 1; $i <= 10; $i++) {
 

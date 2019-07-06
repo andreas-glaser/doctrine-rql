@@ -1,26 +1,25 @@
 <?php
 
-namespace AndreasGlaser\DoctrineRql\Extension\Xiag\Rql\Parser;
+namespace AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser;
 
-use Xiag\Rql\Parser\SubLexer as XiagSubLexer;
+use Graviton\RqlParser\Lexer as GravitonLexer;
+use Graviton\RqlParser\TokenStream;
 
 /**
  * Class Lexer
  *
  * @package AndreasGlaser\DoctrineRql
- * @author  Andreas Glaser
  */
-class Lexer extends \Xiag\Rql\Parser\Lexer
+class Lexer extends GravitonLexer
 {
     /**
      * Workaround for https://github.com/xiag-ag/rql-parser/issues/8
      *
      * @param string $code
      *
-     * @return \Xiag\Rql\Parser\TokenStream
-     * @author Andreas Glaser
+     * @return TokenStream
      */
-    public function tokenize($code)
+    public function tokenize($code): TokenStream
     {
         $code = str_replace('.', '%2E', $code);
 
