@@ -2,6 +2,8 @@
 
 namespace AndreasGlaser\DoctrineRql\Visitor;
 
+use AndreasGlaser\DoctrineRql\Entity\Cart;
+use AndreasGlaser\DoctrineRql\Entity\Product;
 use AndreasGlaser\DoctrineRql\Factory\ORMVisitorFactory;
 use AndreasGlaser\DoctrineRql\Fixtures;
 use AndreasGlaser\DoctrineRql\Helper;
@@ -55,7 +57,7 @@ class ORMTest extends TestCase
 
         $qb
             ->select('cart, products, photos, photo')
-            ->from('AndreasGlaser\DoctrineRql\Entity\Cart', 'cart')
+            ->from(Cart::class, 'cart')
             ->leftJoin('cart.products', 'products')
             ->leftJoin('products.photos', 'photos')
             ->leftJoin('photos.photo', 'photo');
@@ -84,7 +86,7 @@ class ORMTest extends TestCase
         $qb = $this->em->createQueryBuilder();
         $qb
             ->select('product')
-            ->from('AndreasGlaser\DoctrineRql\Entity\Product', 'product');
+            ->from(Product::class, 'product');
 
         $qbTest = clone $qb;
 
@@ -107,7 +109,7 @@ class ORMTest extends TestCase
         $qb = $this->em->createQueryBuilder();
         $qb
             ->select('product')
-            ->from('AndreasGlaser\DoctrineRql\Entity\Product', 'product');
+            ->from(Product::class, 'product');
 
         $qbTest = clone $qb;
 
@@ -131,7 +133,7 @@ class ORMTest extends TestCase
 
         $qb
             ->select('cart, products, photos, photo')
-            ->from('AndreasGlaser\DoctrineRql\Entity\Cart', 'cart')
+            ->from(Cart::class, 'cart')
             ->leftJoin('cart.products', 'products')
             ->leftJoin('products.photos', 'photos')
             ->leftJoin('photos.photo', 'photo');
@@ -154,7 +156,7 @@ class ORMTest extends TestCase
 
         $qb
             ->select('cart, products, photos, photo')
-            ->from('AndreasGlaser\DoctrineRql\Entity\Cart', 'cart')
+            ->from(Cart::class, 'cart')
             ->leftJoin('cart.products', 'products')
             ->leftJoin('products.photos', 'photos')
             ->leftJoin('photos.photo', 'photo');
@@ -177,7 +179,7 @@ class ORMTest extends TestCase
 
         $qb
             ->select('cart, products, photos, photo')
-            ->from('AndreasGlaser\DoctrineRql\Entity\Cart', 'cart')
+            ->from(Cart::class, 'cart')
             ->leftJoin('cart.products', 'products')
             ->leftJoin('products.photos', 'photos')
             ->leftJoin('photos.photo', 'photo');
