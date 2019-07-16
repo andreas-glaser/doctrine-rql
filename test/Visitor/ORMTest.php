@@ -250,4 +250,14 @@ class ORMTest extends TestCase
         $this->assertEquals('SELECT c0_.id AS id_0, c0_.deleted_at AS deleted_at_1, p1_.id AS id_2, p1_.name AS name_3, p1_.published_at AS published_at_4, p1_.deleted_at AS deleted_at_5, p2_.id AS id_6, p3_.id AS id_7, p3_.name AS name_8, p2_.product_id AS product_id_9, p2_.photo_id AS photo_id_10 FROM Cart c0_ LEFT JOIN cart_products c4_ ON c0_.id = c4_.cart_id LEFT JOIN Product p1_ ON p1_.id = c4_.product_id LEFT JOIN ProductPhoto p2_ ON p1_.id = p2_.product_id LEFT JOIN Photo p3_ ON p2_.photo_id = p3_.id WHERE c0_.deleted_at IS NULL AND p1_.published_at IS NOT NULL AND p1_.published_at > ? AND (p1_.id IS NULL OR p1_.id > ?)', $query->getSQL());
         $this->assertEquals(2, $query->getParameters()->count());
     }
+
+    public function testSort(): void
+    {
+        $qb = $this->em->createQueryBuilder()
+            ->select('products')
+            ->from(Product::class, 'products');
+        $rql = 'sort(+name,-publishedAt)';
+        ORMVisitorFactory::appendFiltersOnly($qb, $rql);
+        $this->assertSame('SELECT p0_.id AS id_0, p0_.name AS name_1, p0_.published_at AS published_at_2, p0_.deleted_at AS deleted_at_3 FROM Product p0_ ORDER BY p0_.name ASC, p0_.published_at DESC', $qb->getQuery()->getSQL());
+    }
 }

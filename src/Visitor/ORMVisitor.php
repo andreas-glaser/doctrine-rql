@@ -290,7 +290,7 @@ class ORMVisitor
     protected function visitSort(Node\SortNode $node): void
     {
         foreach ($node->getFields() as $field => $order) {
-            $this->qb->orderBy($this->pathToAlias($field), $order === 1 ? 'ASC' : 'DESC');
+            $this->qb->addOrderBy($this->pathToAlias($field), $order === 1 ? 'ASC' : 'DESC');
         }
     }
 
