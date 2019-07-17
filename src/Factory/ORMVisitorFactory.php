@@ -2,37 +2,40 @@
 
 namespace AndreasGlaser\DoctrineRql\Factory;
 
-use AndreasGlaser\DoctrineRql\Helper\RQLParser;
+use AndreasGlaser\DoctrineRql\Mapper\RQL2ORMMapper;
 use AndreasGlaser\DoctrineRql\Visitor\ORMVisitor;
+use AndreasGlaser\DoctrineRql\Visitor\ORMVisitorInterface;
+use AndreasGlaser\DoctrineRql\Visitor\VisitorException;
 use Doctrine\ORM\QueryBuilder;
+use Graviton\RqlParser\Exception\SyntaxErrorException;
 
 /**
  * Class ORMVisitorFactory
  *
  * @package AndreasGlaser\DoctrineRql\Factory
  */
-class ORMVisitorFactory
+class ORMVisitorFactory implements ORMVisitorFactoryInterface
 {
-    /**
-     * @var ORMVisitor
-     */
-    protected static $visitor;
-
     /**
      * @param QueryBuilder $qb
      * @param string       $rqlString
      * @param bool         $autoRootAlias
      *
-     * @throws \AndreasGlaser\DoctrineRql\Visitor\VisitorException
+     * @throws SyntaxErrorException
+     * @throws VisitorException
+     *
+     * @deprecated Use RQL2ORMMapper instead.
      */
-    public static function appendFiltersOnly(QueryBuilder &$qb, string $rqlString, bool $autoRootAlias = true): void
+    public static function appendFiltersOnly(QueryBuilder $qb, string $rqlString, bool $autoRootAlias = true): void
     {
-        if (!static::$visitor) {
-            static::$visitor = new ORMVisitor();
-        }
+        RQL2ORMMapper::create()->mapToQueryBuilder($qb, $rqlString, $autoRootAlias);
+    }
 
-        $qlQuery = RQLParser::parseFiltersOnly($rqlString);
-
-        static::$visitor->append($qb, $qlQuery, $autoRootAlias);
+    /**
+     * @inheritdoc
+     */
+    public function createVisitor(QueryBuilder $qb, bool $autoRootAlias): ORMVisitorInterface
+    {
+        return new ORMVisitor($qb, $autoRootAlias);
     }
 }

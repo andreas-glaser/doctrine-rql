@@ -1,24 +1,18 @@
 <?php
 
-namespace AndreasGlaser\DoctrineRql\Helper;
+namespace AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser;
 
-use AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Lexer;
 use AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\NodeParser\Query\ComparisonOperator as ExtensionComparisonOperator;
 use Graviton\RqlParser as Graviton;
 use Graviton\RqlParser\NodeParser\Query\ComparisonOperator as GravitonComparisonOperator;
 use Graviton\RqlParser\NodeParser\Query\LogicalOperator as GravitonLogicalOperator;
 
-/**
- * Class RQLParser
- *
- * @package AndreasGlaser\DoctrineRql\Helper
- */
-class RQLParser
+class Parser extends Graviton\Parser
 {
     /**
-     * @return Graviton\Parser
+     * @inheritdoc
      */
-    public static function createFiltersOnly(): \Graviton\RqlParser\Parser
+    public static function createDefaultNodeParser(): Graviton\NodeParserInterface
     {
         $scalarParser = new Graviton\ValueParser\ScalarParser();
         $scalarParser
@@ -72,33 +66,6 @@ class RQLParser
             ->addNodeParser(new Graviton\NodeParser\SortNodeParser($fieldParser))
             ->addNodeParser(new Graviton\NodeParser\LimitNodeParser($integerParser));
 
-        return new Graviton\Parser($parserChain);
-    }
-
-    /**
-     * Parses given RQL string into an abstract syntax tree (AST).
-     *
-     * @param \Graviton\RqlParser\Parser $parser
-     * @param string                     $rql
-     *
-     * @return \Graviton\RqlParser\Query
-     */
-    public static function parse(Graviton\Parser $parser, string $rql): \Graviton\RqlParser\Query
-    {
-        $lexer = new Lexer();
-
-        return $parser->parse($lexer->tokenize($rql));
-    }
-
-    /**
-     * Short cut
-     *
-     * @param string $rql
-     *
-     * @return \Graviton\RqlParser\Query
-     */
-    public static function parseFiltersOnly(string $rql): \Graviton\RqlParser\Query
-    {
-        return static::parse(self::createFiltersOnly(), $rql);
+        return $parserChain;
     }
 }

@@ -1,5 +1,6 @@
 # doctrine-rql
-Parses and applies RQL/FIQL scripts to doctrine orm query builders.
+Parses and applies RQL/FIQL scripts to Doctrine ORM query builders.
+The `select()` operator is not supported, yet.
 
 ## Installation
 ```shell
@@ -12,7 +13,7 @@ composer require andreas-glaser/doctrine-rql 0.3.*
 
 require 'vendor/autoload.php';
 
-use AndreasGlaser\DoctrineRql\Factory\ORMVisitorFactory;
+use AndreasGlaser\DoctrineRql\Mapper\RQL2ORMMapper;
 
 $rqlString = $_GET['rql']; // ?rql=and(eq(cart.id,123),eq(cart.archived,0))
 
@@ -23,8 +24,8 @@ $qb
     ->select('cart')
     ->from('TestApp\Entity\Cart', 'cart');
 
-// append filters
-ORMVisitorFactory::appendFiltersOnly($queryBuilder, $rqlString, false);
+// map RQL string to query builder
+RQL2ORMMapper::create()->mapToQueryBuilder($queryBuilder, $rqlString, false);
 
 /** @var TestApp\Entity\Cart[] $cartEntities */
 $cartEntities = $qb
