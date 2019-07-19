@@ -81,6 +81,11 @@ class ORMVisitor
     protected $aliasMap = [];
 
     /**
+     * @var int
+     */
+    protected $parameterCount = 0;
+
+    /**
      * @param QueryBuilder $qb
      * @param RqlQuery     $query
      * @param bool         $autoRootAlias
@@ -113,6 +118,7 @@ class ORMVisitor
         $this->qb = null;
         $this->autoRootAlias = null;
         $this->aliasMap = [];
+        $this->parameterCount = 0;
 
         return $this;
     }
@@ -206,16 +212,9 @@ class ORMVisitor
             throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
 
-        $parameterName = ':param_' . uniqid();
         $pathToField = $node->getField();
+        $parameterName = $this->addParameter($node->getValue());
         $expr = $this->getExpressionBuilder()->$method($this->pathToAlias($pathToField), $parameterName);
-        $parameter = $node->getValue();
-
-        if ($parameter instanceof Glob) {
-            $parameter = $parameter->toLike();
-        }
-
-        $this->qb->setParameter($parameterName, $parameter);
 
         return $expr;
     }
@@ -233,7 +232,9 @@ class ORMVisitor
         }
 
         $pathToField = $node->getField();
-        $expr = $this->qb->expr()->$method($this->pathToAlias($pathToField), $node->getValues());
+        $parameterNames = array_map([$this, 'addParameter'], $node->getValues());
+
+        $expr = $this->qb->expr()->$method($this->pathToAlias($pathToField), implode(', ', $parameterNames));
 
         return $expr;
     }
@@ -289,7 +290,7 @@ class ORMVisitor
     protected function visitSort(Node\SortNode $node): void
     {
         foreach ($node->getFields() as $field => $order) {
-            $this->qb->orderBy($this->pathToAlias($field), $order === 1 ? 'ASC' : 'DESC');
+            $this->qb->addOrderBy($this->pathToAlias($field), $order === 1 ? 'ASC' : 'DESC');
         }
     }
 
@@ -301,6 +302,23 @@ class ORMVisitor
         $this->qb
             ->setMaxResults($node->getLimit())
             ->setFirstResult($node->getOffset());
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return string
+     */
+    protected function addParameter($value): string
+    {
+        if ($value instanceof Glob) {
+            $value = $value->toLike();
+        }
+
+        $parameterName = ':_rql_' . ++$this->parameterCount;
+        $this->qb->setParameter($parameterName, $value);
+
+        return $parameterName;
     }
 
     /**
