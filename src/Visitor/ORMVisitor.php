@@ -20,17 +20,12 @@ use Graviton\RqlParser\Query as RqlQuery;
  *
  * @package AndreasGlaser\DoctrineRql\Visitor
  */
-class ORMVisitor
+class ORMVisitor implements ORMVisitorInterface
 {
     /**
-     * @var ExpressionBuilder
+     * @var string[]
      */
-    private $expressionBuilder;
-
-    /**
-     * @var array
-     */
-    protected $scalarMap = [
+    protected const SCALAR_MAP = [
         \Graviton\RqlParser\Node\Query\ScalarOperator\EqNode::class => 'eq',
         \Graviton\RqlParser\Node\Query\ScalarOperator\NeNode::class => 'neq',
         \Graviton\RqlParser\Node\Query\ScalarOperator\LtNode::class => 'lt',
@@ -41,25 +36,25 @@ class ORMVisitor
     ];
 
     /**
-     * @var array
+     * @var string[]
      */
-    protected $nullOperatorMap = [
+    protected const NULL_OPERATOR_MAP = [
         \AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator\IsNullNode::class => 'isNull',
         \AndreasGlaser\DoctrineRql\Extension\Graviton\RqlParser\Node\Query\NullOperator\IsNotNullNode::class => 'isNotNull',
     ];
 
     /**
-     * @var array
+     * @var string[]
      */
-    protected $arrayMap = [
+    protected const ARRAY_MAP = [
         \Graviton\RqlParser\Node\Query\ArrayOperator\InNode::class => 'in',
         \Graviton\RqlParser\Node\Query\ArrayOperator\OutNode::class => 'notIn',
     ];
 
     /**
-     * @var array
+     * @var string[]
      */
-    protected $logicMap = [
+    protected const LOGIC_MAP = [
         \Graviton\RqlParser\Node\Query\LogicalOperator\AndNode::class => \Doctrine\ORM\Query\Expr\Andx::class,
         \Graviton\RqlParser\Node\Query\LogicalOperator\OrNode::class => \Doctrine\ORM\Query\Expr\Orx::class,
         \Graviton\RqlParser\Node\Query\LogicalOperator\NotNode::class => \AndreasGlaser\DoctrineRql\Extension\Doctrine\ORM\Query\Expr\Notx::class,
@@ -71,7 +66,7 @@ class ORMVisitor
     protected $qb;
 
     /**
-     * @var string|null
+     * @var bool
      */
     protected $autoRootAlias;
 
@@ -86,51 +81,35 @@ class ORMVisitor
     protected $parameterCount = 0;
 
     /**
-     * @param QueryBuilder $qb
-     * @param RqlQuery     $query
-     * @param bool         $autoRootAlias
-     *
-     * @throws VisitorException
+     * @var string
      */
-    public function append(QueryBuilder $qb, RqlQuery $query, bool $autoRootAlias = true): void
-    {
-        $this->reset();
-
-        $this->qb = $qb;
-
-        if ($autoRootAlias) {
-            $this->autoRootAlias = ArrayHelper::getFirstValue($this->qb->getRootAliases());
-        } else {
-            $this->autoRootAlias = null;
-        }
-
-        $this->buildPathToAliasMap();
-        $this->visitQuery($query);
-    }
+    protected $rootAlias;
 
     /**
-     * Resets values for object re-use.
-     *
-     * @return ORMVisitor
+     * @var ExpressionBuilder
      */
-    public function reset(): self
-    {
-        $this->qb = null;
-        $this->autoRootAlias = null;
-        $this->aliasMap = [];
-        $this->parameterCount = 0;
+    private $expressionBuilder;
 
-        return $this;
+    /**
+     * @param QueryBuilder $qb
+     * @param bool         $autoRootAlias true to prepend the root alias of the
+     *     query builder to the field names from the RQL query, false otherwise.
+     */
+    function __construct(QueryBuilder $qb, bool $autoRootAlias = true)
+    {
+        $this->qb = $qb;
+        $this->autoRootAlias = $autoRootAlias;
+        $this->buildPathToAliasMap();
     }
 
     protected function buildPathToAliasMap(): void
     {
-        $rootAlias = ArrayHelper::getFirstValue($this->qb->getRootAliases());
-        $this->aliasMap[$rootAlias] = $rootAlias;
+        $this->rootAlias = ArrayHelper::getFirstValue($this->qb->getRootAliases());
+        $this->aliasMap[$this->rootAlias] = $this->rootAlias;
 
-        if (array_key_exists($rootAlias, $this->qb->getDQLParts()['join'])) {
+        if (array_key_exists($this->rootAlias, $this->qb->getDQLParts()['join'])) {
             /** @var Expr\Join $part */
-            foreach ($this->qb->getDQLParts()['join'][$rootAlias] AS $part) {
+            foreach ($this->qb->getDQLParts()['join'][$this->rootAlias] AS $part) {
                 $alias = $part->getAlias();
                 $join = $part->getJoin();
                 $path = $alias;
@@ -177,18 +156,16 @@ class ORMVisitor
     }
 
     /**
-     * @param RqlQuery $query
-     *
-     * @throws VisitorException
+     * @inheritdoc
      */
-    protected function visitQuery(RqlQuery $query): void
+    public function visitQuery(RqlQuery $query): void
     {
-        if ($selectNode = $query->getSelect()) {
+        // if ($query->getSelect()) {
             // todo: Implement this
-        }
+        // }
 
-        if ($abstractQueryNode = $query->getQuery()) {
-            $this->qb->andWhere($this->walkNodes($abstractQueryNode));
+        if ($query->getQuery()) {
+            $this->qb->andWhere($this->walkNodes($query->getQuery()));
         }
 
         if ($query->getSort()) {
@@ -208,7 +185,7 @@ class ORMVisitor
      */
     protected function visitScalar(AbstractScalarOperatorNode $node): Expr\Comparison
     {
-        if (!$method = ArrayHelper::get($this->scalarMap, get_class($node))) {
+        if (!$method = ArrayHelper::get(static::SCALAR_MAP, get_class($node))) {
             throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
 
@@ -227,7 +204,7 @@ class ORMVisitor
      */
     protected function visitArray(AbstractArrayOperatorNode $node): Expr\Func
     {
-        if (!$method = ArrayHelper::get($this->arrayMap, get_class($node))) {
+        if (!$method = ArrayHelper::get(static::ARRAY_MAP, get_class($node))) {
             throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
 
@@ -247,7 +224,7 @@ class ORMVisitor
      */
     protected function visitLogic(AbstractLogicalOperatorNode $node)
     {
-        if (!$class = ArrayHelper::get($this->logicMap, get_class($node))) {
+        if (!$class = ArrayHelper::get(static::LOGIC_MAP, get_class($node))) {
             throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
 
@@ -274,7 +251,7 @@ class ORMVisitor
      */
     protected function visitNullOperatorNode(AbstractNullOperatorNode $node): string
     {
-        if (!$method = ArrayHelper::get($this->nullOperatorMap, get_class($node))) {
+        if (!$method = ArrayHelper::get(static::NULL_OPERATOR_MAP, get_class($node))) {
             throw new VisitorException(sprintf('Unsupported node "%s"', get_class($node)));
         }
 
@@ -329,13 +306,22 @@ class ORMVisitor
     protected function pathToAlias(string $path): string
     {
         if ($this->autoRootAlias) {
-            $path = $this->autoRootAlias . '.' . $path;
+            $path = $this->rootAlias . '.' . $path;
         }
 
         $lastPos = strrpos($path, '.');
-        $field = substr($path, $lastPos + 1);
-        $path = substr($path, 0, $lastPos);
+        if (false === $lastPos) {
+            throw new VisitorException(sprintf('Incomplete field path "%s"', $path));
+        }
 
-        return ArrayHelper::get($this->aliasMap, $path) . '.' . $field;
+        $field = substr($path, $lastPos + 1);
+        $entityPath = substr($path, 0, $lastPos);
+
+        $entityAlias = ArrayHelper::get($this->aliasMap, $entityPath);
+        if (null === $entityAlias) {
+            throw new VisitorException(sprintf('Unknown field path "%s"', $path));
+        }
+
+        return $entityAlias . '.' . $field;
     }
 }
