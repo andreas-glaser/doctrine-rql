@@ -4,7 +4,7 @@ namespace AndreasGlaser\DoctrineRql\Fixtures;
 
 use AndreasGlaser\DoctrineRql\Entity;
 use Doctrine\Common\DataFixtures\FixtureInterface;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 
 /**
  * Class ORM
@@ -16,7 +16,7 @@ class ORM implements FixtureInterface
     /**
      * @inheritDoc
      */
-    public function load(ObjectManager $manager): void
+    public function load(ObjectManager $manager)
     {
         for ($i = 1; $i <= 10; $i++) {
 
